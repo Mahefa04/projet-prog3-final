@@ -1,4 +1,4 @@
-package com.example.agriculture_federation.endpoint.rest.model;
+package com.example.demo.endpoint.rest.model;
 
 import com.example.demo.endpoint.rest.model.CreateCollectivityStructureRest;
 
