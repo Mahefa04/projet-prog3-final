@@ -1,5 +1,7 @@
 package com.example.agriculture_federation.endpoint.rest.model;
 
+import com.example.demo.endpoint.rest.model.CreateCollectivityStructureRest;
+
 import java.util.List;
 
 public class CreateCollectivityRest {
