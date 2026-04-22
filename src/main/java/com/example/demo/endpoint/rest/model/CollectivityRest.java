@@ -5,7 +5,7 @@ import java.util.List;
 public class CollectivityRest {
     private String id;
     private String location;
-    private String number;
+    private Integer number;
     private String name;
     private CollectivityStructureRest structure;
     private List<MemberRest> members;
@@ -13,7 +13,7 @@ public class CollectivityRest {
     public CollectivityRest() {
     }
 
-    public CollectivityRest(String id, String location, String number, String name, CollectivityStructureRest structure, List<MemberRest> members) {
+    public CollectivityRest(String id, String location, Integer number, String name, CollectivityStructureRest structure, List<MemberRest> members) {
         this.id = id;
         this.location = location;
         this.number = number;
@@ -54,11 +54,11 @@ public class CollectivityRest {
         this.members = members;
     }
 
-    public String getNumber() {
+    public Integer getNumber() {
         return number;
     }
 
-    public void setNumber(String number) {
+    public void setNumber(Integer number) {
         this.number = number;
     }
 

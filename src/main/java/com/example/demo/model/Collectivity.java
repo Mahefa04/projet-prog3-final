@@ -5,7 +5,7 @@ import java.util.List;
 public class Collectivity {
     private String id;
     private String location;
-    private String number;
+    private Integer number;
     private String name;
     private CollectivityStructure structure;
     private List<Member> members;
@@ -13,7 +13,7 @@ public class Collectivity {
     public Collectivity() {
     }
 
-    public Collectivity(String id, String location, String number, String name, CollectivityStructure structure, List<Member> members) {
+    public Collectivity(String id, String location, Integer number, String name, CollectivityStructure structure, List<Member> members) {
         this.id = id;
         this.location = location;
         this.number = number;
@@ -58,7 +58,7 @@ public class Collectivity {
         return number;
     }
 
-    public void setNumber(String number) {
+    public void setNumber(Integer number) {
         this.number = number;
     }
 
