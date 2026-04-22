@@ -3,6 +3,7 @@ package com.example.demo.model;
 import jdk.jfr.Frequency;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class CreateMembershipFee {
     private LocalDate eligibleFrom;
@@ -40,5 +41,27 @@ public class CreateMembershipFee {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        CreateMembershipFee that = (CreateMembershipFee) o;
+        return Double.compare(amount, that.amount) == 0 && Objects.equals(eligibleFrom, that.eligibleFrom) && Objects.equals(frequency, that.frequency) && Objects.equals(label, that.label);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(eligibleFrom, frequency, amount, label);
+    }
+
+    @Override
+    public String toString() {
+        return "CreateMembershipFee{" +
+                "eligibleFrom=" + eligibleFrom +
+                ", frequency=" + frequency +
+                ", amount=" + amount +
+                ", label='" + label + '\'' +
+                '}';
     }
 }
