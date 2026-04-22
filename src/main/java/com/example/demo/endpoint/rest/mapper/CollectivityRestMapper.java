@@ -1,70 +1,67 @@
 package com.example.demo.endpoint.rest.mapper;
 
-import com.example.demo.endpoint.rest.model.CollectivityRest;
-import com.example.demo.endpoint.rest.model.CollectivityStructureRest;
-import com.example.demo.endpoint.rest.model.CreateCollectivityRest;
-import com.example.demo.endpoint.rest.model.CreateCollectivityStructureRest;
-import com.example.demo.model.Collectivity;
-import com.example.demo.model.CollectivityStructure;
-import com.example.demo.model.CreateCollectivity;
-import com.example.demo.model.CreateCollectivityStructure;
-import com.example.demo.model.Member;
+import com.example.demo.endpoint.rest.model.CollectivityInformationRest;
+import com.example.demo.endpoint.rest.model.CreateMembershipFeeRest;
+import com.example.demo.endpoint.rest.model.MembershipFeeRest;
+import com.example.demo.exception.BadRequestException;
+import com.example.demo.model.CollectivityInformation;
+import com.example.demo.model.CreateMembershipFee;
+import com.example.demo.model.Frequency;
+import com.example.demo.model.MembershipFee;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 public class CollectivityRestMapper {
 
-    private final MemberRestMapper memberRestMapper;
+    public CollectivityInformation toDomainInformation(CollectivityInformationRest rest) {
+        CollectivityInformation info = new CollectivityInformation();
 
-    public CollectivityRestMapper(MemberRestMapper memberRestMapper) {
-        this.memberRestMapper = memberRestMapper;
+        info.setName(rest.getName());
+        info.setNumber(rest.getNumber());
+
+        return info;
     }
 
-    public CreateCollectivity toDomainCreate(CreateCollectivityRest rest) {
-        CreateCollectivityStructure structure = null;
+    public CreateMembershipFee toDomainCreateMembershipFee(CreateMembershipFeeRest rest) {
+        CreateMembershipFee fee = new CreateMembershipFee();
+        String frequencyValue;
 
-        if (rest.getStructure() != null) {
-            CreateCollectivityStructureRest s = rest.getStructure();
-            structure = new CreateCollectivityStructure(
-                    s.getPresident(),
-                    s.getVicePresident(),
-                    s.getTreasurer(),
-                    s.getSecretary()
-            );
+        fee.setEligibleFrom(rest.getEligibleFrom());
+        fee.setAmount(rest.getAmount());
+        fee.setLabel(rest.getLabel());
+
+        frequencyValue = rest.getFrequency();
+        if (frequencyValue == null) {
+            throw new BadRequestException("Invalid frequency: null");
         }
 
-        return new CreateCollectivity(
-                rest.getLocation(),
-                rest.getMembers(),
-                rest.getFederationApproval(),
-                structure
-        );
-    }
+        frequencyValue = frequencyValue.trim().toUpperCase();
 
-    public CollectivityRest toRest(Collectivity domain) {
-        List<com.example.demo.endpoint.rest.model.MemberRest> members = new ArrayList<com.example.demo.endpoint.rest.model.MemberRest>();
-
-        for (Member member : domain.getMembers()) {
-            members.add(memberRestMapper.toRestWithoutNestedReferees(member));
+        if ("WEEKLY".equals(frequencyValue)) {
+            fee.setFrequency(Frequency.WEEKLY);
+        } else if ("MONTHLY".equals(frequencyValue)) {
+            fee.setFrequency(Frequency.MONTHLY);
+        } else if ("ANNUALLY".equals(frequencyValue)) {
+            fee.setFrequency(Frequency.ANNUALLY);
+        } else if ("PUNCTUALLY".equals(frequencyValue)) {
+            fee.setFrequency(Frequency.PUNCTUALLY);
+        } else {
+            throw new BadRequestException("Invalid frequency: " + rest.getFrequency());
         }
 
-        return new CollectivityRest(
-                domain.getId(),
-                domain.getLocation(),
-                toRestStructure(domain.getStructure()),
-                members
-        );
+        return fee;
     }
 
-    private CollectivityStructureRest toRestStructure(CollectivityStructure structure) {
-        return new CollectivityStructureRest(
-                memberRestMapper.toRestWithoutNestedReferees(structure.getPresident()),
-                memberRestMapper.toRestWithoutNestedReferees(structure.getVicePresident()),
-                memberRestMapper.toRestWithoutNestedReferees(structure.getTreasurer()),
-                memberRestMapper.toRestWithoutNestedReferees(structure.getSecretary())
-        );
+    public MembershipFeeRest toMembershipFeeRest(MembershipFee fee) {
+        MembershipFeeRest rest = new MembershipFeeRest();
+
+        rest.setId(fee.getId());
+        rest.setEligibleFrom(fee.getEligibleFrom().toString());
+        rest.setFrequency(fee.getFrequency().name());
+        rest.setAmount(fee.getAmount());
+        rest.setLabel(fee.getLabel());
+        rest.setStatus(fee.getStatus().name());
+
+        return rest;
     }
 }
