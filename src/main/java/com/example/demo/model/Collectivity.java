@@ -54,7 +54,7 @@ public class Collectivity {
         this.members = members;
     }
 
-    public String getNumber() {
+    public Integer getNumber() {
         return number;
     }
 
