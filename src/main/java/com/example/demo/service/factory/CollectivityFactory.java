@@ -11,26 +11,33 @@ import java.util.List;
 @Component
 public class CollectivityFactory {
 
-    public Collectivity create(
-            CreateCollectivity input,
-            List<Member> members,
-            Member president,
-            Member vicePresident,
-            Member treasurer,
-            Member secretary
-    ) {
-        CollectivityStructure structure = new CollectivityStructure(
-                president,
-                vicePresident,
-                treasurer,
-                secretary
-        );
+    public Collectivity create(CreateCollectivity input, List<Member> members,
+                               Member president, Member vicePresident,
+                               Member treasurer, Member secretary) {
 
-        return new Collectivity(
-                null,
-                input.getLocation(),
-                structure,
-                members
-        );
+        Collectivity collectivity = new Collectivity();
+
+        collectivity.setLocation(input.getLocation());
+        collectivity.setMembers(members);
+        collectivity.setNumber(generateNumber());
+        collectivity.setName(generateName(input.getLocation()));
+
+        CollectivityStructure structure = new CollectivityStructure();
+        structure.setPresident(president);
+        structure.setVicePresident(vicePresident);
+        structure.setTreasurer(treasurer);
+        structure.setSecretary(secretary);
+
+        collectivity.setStructure(structure);
+
+        return collectivity;
+    }
+
+    private String generateNumber() {
+        return "COL-" + System.currentTimeMillis();
+    }
+
+    private String generateName(String location) {
+        return "Collectivity-" + location + "-" + System.currentTimeMillis();
     }
 }
