@@ -1,75 +1,85 @@
 package com.example.demo.endpoint.rest.controller;
 
 import com.example.demo.endpoint.rest.mapper.CollectivityRestMapper;
-import com.example.demo.endpoint.rest.mapper.MemberRestMapper;
-import com.example.demo.endpoint.rest.model.CollectivityRest;
-import com.example.demo.endpoint.rest.model.CreateCollectivityRest;
-import com.example.demo.endpoint.rest.model.CreateMemberRest;
-import com.example.demo.endpoint.rest.model.MemberRest;
-import com.example.demo.model.CreateCollectivity;
-import com.example.demo.model.CreateMember;
+import com.example.demo.endpoint.rest.model.CollectivityInformationRest;
+import com.example.demo.endpoint.rest.model.CreateMembershipFeeRest;
+import com.example.demo.endpoint.rest.model.MembershipFeeRest;
+import com.example.demo.model.Collectivity;
+import com.example.demo.model.CollectivityInformation;
+import com.example.demo.model.CreateMembershipFee;
+import com.example.demo.model.MembershipFee;
 import com.example.demo.service.CollectivityService;
-import com.example.demo.service.MemberService;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping
 public class FederationController {
 
     private final CollectivityService collectivityService;
-    private final MemberService memberService;
     private final CollectivityRestMapper collectivityRestMapper;
-    private final MemberRestMapper memberRestMapper;
 
     public FederationController(
             CollectivityService collectivityService,
-            MemberService memberService,
-            CollectivityRestMapper collectivityRestMapper,
-            MemberRestMapper memberRestMapper
+            CollectivityRestMapper collectivityRestMapper
     ) {
         this.collectivityService = collectivityService;
-        this.memberService = memberService;
         this.collectivityRestMapper = collectivityRestMapper;
-        this.memberRestMapper = memberRestMapper;
     }
 
-    @PostMapping("/collectivities")
-    @ResponseStatus(HttpStatus.CREATED)
-    public List<CollectivityRest> createCollectivities(@RequestBody List<CreateCollectivityRest> request) {
-        List<CreateCollectivity> inputs = new ArrayList<CreateCollectivity>();
+    @PutMapping("/collectivities/{id}/informations")
+    @ResponseStatus(HttpStatus.OK)
+    public Collectivity updateCollectivityInformations(
+            @PathVariable String id,
+            @RequestBody CollectivityInformationRest request
+    ) {
+        CollectivityInformation info;
 
-        for (CreateCollectivityRest item : request) {
-            inputs.add(collectivityRestMapper.toDomainCreate(item));
+        info = collectivityRestMapper.toDomainInformation(request);
+
+        return collectivityService.updateInformation(id, info);
+    }
+
+    @PostMapping("/collectivities/{id}/membershipFees")
+    @ResponseStatus(HttpStatus.OK)
+    public List<MembershipFeeRest> createMembershipFees(
+            @PathVariable String id,
+            @RequestBody List<CreateMembershipFeeRest> request
+    ) {
+        List<CreateMembershipFee> fees;
+        List<MembershipFee> created;
+        List<MembershipFeeRest> response;
+        int i;
+
+        fees = new ArrayList<CreateMembershipFee>();
+        for (i = 0; i < request.size(); i++) {
+            fees.add(collectivityRestMapper.toDomainCreateMembershipFee(request.get(i)));
         }
 
-        List<CollectivityRest> response = new ArrayList<CollectivityRest>();
-        List<com.example.demo.model.Collectivity> created = collectivityService.createAll(inputs);
+        created = collectivityService.createFees(id, fees);
 
-        for (com.example.demo.model.Collectivity collectivity : created) {
-            response.add(collectivityRestMapper.toRest(collectivity));
+        response = new ArrayList<MembershipFeeRest>();
+        for (i = 0; i < created.size(); i++) {
+            response.add(collectivityRestMapper.toMembershipFeeRest(created.get(i)));
         }
 
         return response;
     }
 
-    @PostMapping("/members")
-    @ResponseStatus(HttpStatus.CREATED)
-    public List<MemberRest> createMembers(@RequestBody List<CreateMemberRest> request) {
-        List<CreateMember> inputs = new ArrayList<CreateMember>();
+    @GetMapping("/collectivities/{id}/membershipFees")
+    @ResponseStatus(HttpStatus.OK)
+    public List<MembershipFeeRest> getMembershipFees(@PathVariable String id) {
+        List<MembershipFee> fees;
+        List<MembershipFeeRest> response;
+        int i;
 
-        for (CreateMemberRest item : request) {
-            inputs.add(memberRestMapper.toDomainCreate(item));
-        }
+        fees = collectivityService.getFees(id);
 
-        List<MemberRest> response = new ArrayList<MemberRest>();
-        List<com.example.demo.model.Member> created = memberService.createAll(inputs);
-
-        for (com.example.demo.model.Member member : created) {
-            response.add(memberRestMapper.toRest(member));
+        response = new ArrayList<MembershipFeeRest>();
+        for (i = 0; i < fees.size(); i++) {
+            response.add(collectivityRestMapper.toMembershipFeeRest(fees.get(i)));
         }
 
         return response;
