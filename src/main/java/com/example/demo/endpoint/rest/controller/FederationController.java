@@ -47,9 +47,9 @@ public class FederationController {
         }
 
         List<CollectivityRest> response = new ArrayList<CollectivityRest>();
-        List<com.example.agriculture_federation.model.Collectivity> created = collectivityService.createAll(inputs);
+        List<com.example.demo.model.Collectivity> created = collectivityService.createAll(inputs);
 
-        for (com.example.agriculture_federation.model.Collectivity collectivity : created) {
+        for (com.example.demo.model.Collectivity collectivity : created) {
             response.add(collectivityRestMapper.toRest(collectivity));
         }
 
@@ -66,9 +66,9 @@ public class FederationController {
         }
 
         List<MemberRest> response = new ArrayList<MemberRest>();
-        List<com.example.agriculture_federation.model.Member> created = memberService.createAll(inputs);
+        List<com.example.demo.model.Member> created = memberService.createAll(inputs);
 
-        for (com.example.agriculture_federation.model.Member member : created) {
+        for (com.example.demo.model.Member member : created) {
             response.add(memberRestMapper.toRest(member));
         }
 

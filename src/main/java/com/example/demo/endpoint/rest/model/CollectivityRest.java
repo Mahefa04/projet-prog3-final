@@ -5,15 +5,19 @@ import java.util.List;
 public class CollectivityRest {
     private String id;
     private String location;
+    private String number;
+    private String name;
     private CollectivityStructureRest structure;
     private List<MemberRest> members;
 
     public CollectivityRest() {
     }
 
-    public CollectivityRest(String id, String location, CollectivityStructureRest structure, List<MemberRest> members) {
+    public CollectivityRest(String id, String location, String number, String name, CollectivityStructureRest structure, List<MemberRest> members) {
         this.id = id;
         this.location = location;
+        this.number = number;
+        this.name = name;
         this.structure = structure;
         this.members = members;
     }
@@ -48,5 +52,21 @@ public class CollectivityRest {
 
     public void setMembers(List<MemberRest> members) {
         this.members = members;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
