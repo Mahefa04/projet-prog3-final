@@ -20,17 +20,20 @@ public class CollectivityService {
     private final MemberRepository memberRepository;
     private final CollectivityValidator collectivityValidator;
     private final CollectivityFactory collectivityFactory;
+    private final Collectivity collectivity;
 
     public CollectivityService(
             CollectivityRepository collectivityRepository,
             MemberRepository memberRepository,
             CollectivityValidator collectivityValidator,
-            CollectivityFactory collectivityFactory
+            CollectivityFactory collectivityFactory,
+            Collectivity collectivity
     ) {
         this.collectivityRepository = collectivityRepository;
         this.memberRepository = memberRepository;
         this.collectivityValidator = collectivityValidator;
         this.collectivityFactory = collectivityFactory;
+        this.collectivity = collectivity;
     }
 
     public List<Collectivity> createAll(List<CreateCollectivity> inputs) {
@@ -38,6 +41,11 @@ public class CollectivityService {
 
         for (CreateCollectivity input : inputs) {
             collectivityValidator.validate(input);
+
+            collectivityValidator.validateUniqueNumberAndName(
+                    collectivity.getNumber(),
+                    collectivity.getName()
+            );
 
             List<Member> members = new ArrayList<Member>();
             if (input.getMemberIds() != null) {
