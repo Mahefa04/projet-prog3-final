@@ -9,12 +9,14 @@ import org.springframework.stereotype.Component;
 public class MembershipFeeValidator {
 
     public void validateAll(List<CreateMembershipFee> fees) {
+        int i;
+
         if (fees == null || fees.isEmpty()) {
             throw new BadRequestException("Membership fees are required");
         }
 
-        for (CreateMembershipFee fee : fees) {
-            validate(fee);
+        for (i = 0; i < fees.size(); i++) {
+            validate(fees.get(i));
         }
     }
 
