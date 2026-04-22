@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.model.Collectivity;
 import com.example.demo.model.CollectivityInformation;
@@ -84,5 +85,50 @@ public class CollectivityService {
         return member;
     }
 
-    public Collectivity updateInformation(String id, CollectivityInformation info)
+    public Collectivity updateInformation(String id, CollectivityInformation info) {
+        Collectivity existingCollectivity = collectivityRepository.findById(id);
+
+        if (existingCollectivity == null) {
+            throw new NotFoundException("Collectivity not found: " + id);
+        }
+
+        if (info == null) {
+            throw new BadRequestException("Collectivity information is required");
+        }
+
+        if (info.getName() == null || info.getName().trim().isEmpty()) {
+            throw new BadRequestException("Collectivity name is required");
+        }
+
+        if (info.getNumber() == null) {
+            throw new BadRequestException("Collectivity number is required");
+        }
+
+        if (existingCollectivity.getName() != null
+                && !existingCollectivity.getName().equals(info.getName())) {
+            throw new BadRequestException("Collectivity name cannot be changed once assigned");
+        }
+
+        if (existingCollectivity.getNumber() != null
+                && !existingCollectivity.getNumber().equals(info.getNumber())) {
+            throw new BadRequestException("Collectivity number cannot be changed once assigned");
+        }
+
+        Collectivity collectivityWithSameName = collectivityRepository.findByName(info.getName());
+        if (collectivityWithSameName != null
+                && !collectivityWithSameName.getId().equals(existingCollectivity.getId())) {
+            throw new BadRequestException("Collectivity name is already used by another collectivity");
+        }
+
+        Collectivity collectivityWithSameNumber = collectivityRepository.findByNumber(info.getNumber());
+        if (collectivityWithSameNumber != null
+                && !collectivityWithSameNumber.getId().equals(existingCollectivity.getId())) {
+            throw new BadRequestException("Collectivity number is already used by another collectivity");
+        }
+
+        existingCollectivity.setName(info.getName());
+        existingCollectivity.setNumber(info.getNumber());
+
+        return collectivityRepository.save(existingCollectivity);
+    }
 }
