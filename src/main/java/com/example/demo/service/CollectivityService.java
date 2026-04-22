@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.model.Collectivity;
+import com.example.demo.model.CollectivityInformation;
 import com.example.demo.model.CreateCollectivity;
 import com.example.demo.model.Member;
 import com.example.demo.repository.CollectivityRepository;
@@ -82,4 +83,6 @@ public class CollectivityService {
         }
         return member;
     }
+
+    public Collectivity updateInformation(String id, CollectivityInformation info)
 }
