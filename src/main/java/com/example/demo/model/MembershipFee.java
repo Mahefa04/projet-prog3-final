@@ -9,6 +9,9 @@ public class MembershipFee extends CreateMembershipFee {
         this.status = status;
     }
 
+    public MembershipFee() {
+    }
+
     public String getId() {
         return id;
     }
