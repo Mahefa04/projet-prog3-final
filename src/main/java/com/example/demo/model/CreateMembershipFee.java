@@ -1,7 +1,5 @@
 package com.example.demo.model;
 
-import jdk.jfr.Frequency;
-
 import java.time.LocalDate;
 import java.util.Objects;
 
