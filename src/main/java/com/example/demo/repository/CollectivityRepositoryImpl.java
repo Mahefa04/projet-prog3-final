@@ -17,7 +17,7 @@ public class CollectivityRepositoryImpl implements CollectivityRepository {
 
     @Override
     public Collectivity findById(String id) {
-        String sql = "SELECT id, name, number, location FROM collectivities WHERE id = ?";
+        String sql = "SELECT id, name, number, locality, specialization FROM collectivities WHERE id = ?";
 
         try {
             PreparedStatement pstmt = connection.prepareStatement(sql);
@@ -42,7 +42,7 @@ public class CollectivityRepositoryImpl implements CollectivityRepository {
 
     @Override
     public Collectivity findByName(String name) {
-        String sql = "SELECT id, name, number, location FROM collectivities WHERE name = ?";
+        String sql = "SELECT id, name, number, locality, specialization FROM collectivities WHERE name = ?";
 
         try {
             PreparedStatement pstmt = connection.prepareStatement(sql);
@@ -67,7 +67,7 @@ public class CollectivityRepositoryImpl implements CollectivityRepository {
 
     @Override
     public Collectivity findByNumber(Integer number) {
-        String sql = "SELECT id, name, number, location FROM collectivities WHERE number = ?";
+        String sql = "SELECT id, name, number, locality, specialization FROM collectivities WHERE number = ?";
 
         try {
             PreparedStatement pstmt = connection.prepareStatement(sql);
@@ -92,7 +92,7 @@ public class CollectivityRepositoryImpl implements CollectivityRepository {
 
     @Override
     public Collectivity save(Collectivity collectivity) {
-        String sql = "UPDATE collectivities SET name = ?, number = ?, location = ? WHERE id = ?";
+        String sql = "UPDATE collectivities SET name = ?, number = ?, locality = ?, specialization = ? WHERE id = ?";
 
         try {
             PreparedStatement pstmt = connection.prepareStatement(sql);
@@ -105,8 +105,9 @@ public class CollectivityRepositoryImpl implements CollectivityRepository {
                 pstmt.setNull(2, java.sql.Types.INTEGER);
             }
 
-            pstmt.setString(3, collectivity.getLocation());
-            pstmt.setString(4, collectivity.getId());
+            pstmt.setString(3, collectivity.getLocality());
+            pstmt.setString(4, collectivity.getSpecialization());
+            pstmt.setString(5, collectivity.getId());
 
             pstmt.executeUpdate();
             pstmt.close();
@@ -130,7 +131,8 @@ public class CollectivityRepositoryImpl implements CollectivityRepository {
             collectivity.setNumber(number);
         }
 
-        collectivity.setLocation(rs.getString("location"));
+        collectivity.setLocality(rs.getString("locality"));
+        collectivity.setSpecialization(rs.getString("specialization"));
 
         return collectivity;
     }

@@ -4,20 +4,22 @@ import java.util.List;
 
 public class Collectivity {
     private String id;
-    private String location;
+    private String locality;
     private Integer number;
     private String name;
+    private String specialization;
     private CollectivityStructure structure;
     private List<Member> members;
 
     public Collectivity() {
     }
 
-    public Collectivity(String id, String location, Integer number, String name, CollectivityStructure structure, List<Member> members) {
+    public Collectivity(String id, String locatlity, Integer number, String name, String specialization, CollectivityStructure structure, List<Member> members) {
         this.id = id;
-        this.location = location;
+        this.locality = locatlity;
         this.number = number;
         this.name = name;
+        this.specialization = specialization;
         this.structure = structure;
         this.members = members;
     }
@@ -30,12 +32,12 @@ public class Collectivity {
         this.id = id;
     }
 
-    public String getLocation() {
-        return location;
+    public String getLocality() {
+        return locality;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setLocality(String locality) {
+        this.locality = locality;
     }
 
     public CollectivityStructure getStructure() {
@@ -70,5 +72,11 @@ public class Collectivity {
         this.name = name;
     }
 
+    public String getSpecialization() {
+        return specialization;
+    }
 
+    public void setSpecialization(String specialization) {
+        this.specialization = specialization;
+    }
 }
