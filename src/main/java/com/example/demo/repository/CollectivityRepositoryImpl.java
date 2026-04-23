@@ -17,14 +17,13 @@ public class CollectivityRepositoryImpl implements CollectivityRepository {
 
     @Override
     public Collectivity findById(String id) {
-        String sql = "SELECT id, name, number, locality, specialization FROM collectivities WHERE id = ?";
+        String sql = "SELECT id, number, name, locality, specialization FROM collectivities WHERE id = ?";
 
         try {
             PreparedStatement pstmt = connection.prepareStatement(sql);
             pstmt.setString(1, id);
 
             ResultSet rs = pstmt.executeQuery();
-
             Collectivity collectivity = null;
 
             if (rs.next()) {
@@ -42,14 +41,13 @@ public class CollectivityRepositoryImpl implements CollectivityRepository {
 
     @Override
     public Collectivity findByName(String name) {
-        String sql = "SELECT id, name, number, locality, specialization FROM collectivities WHERE name = ?";
+        String sql = "SELECT id, number, name, locality, specialization FROM collectivities WHERE name = ?";
 
         try {
             PreparedStatement pstmt = connection.prepareStatement(sql);
             pstmt.setString(1, name);
 
             ResultSet rs = pstmt.executeQuery();
-
             Collectivity collectivity = null;
 
             if (rs.next()) {
@@ -67,14 +65,13 @@ public class CollectivityRepositoryImpl implements CollectivityRepository {
 
     @Override
     public Collectivity findByNumber(Integer number) {
-        String sql = "SELECT id, name, number, locality, specialization FROM collectivities WHERE number = ?";
+        String sql = "SELECT id, number, name, locality, specialization FROM collectivities WHERE number = ?";
 
         try {
             PreparedStatement pstmt = connection.prepareStatement(sql);
             pstmt.setInt(1, number);
 
             ResultSet rs = pstmt.executeQuery();
-
             Collectivity collectivity = null;
 
             if (rs.next()) {
@@ -122,7 +119,6 @@ public class CollectivityRepositoryImpl implements CollectivityRepository {
         Collectivity collectivity = new Collectivity();
 
         collectivity.setId(rs.getString("id"));
-        collectivity.setName(rs.getString("name"));
 
         int number = rs.getInt("number");
         if (rs.wasNull()) {
@@ -131,6 +127,7 @@ public class CollectivityRepositoryImpl implements CollectivityRepository {
             collectivity.setNumber(number);
         }
 
+        collectivity.setName(rs.getString("name"));
         collectivity.setLocality(rs.getString("locality"));
         collectivity.setSpecialization(rs.getString("specialization"));
 

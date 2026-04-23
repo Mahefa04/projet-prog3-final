@@ -1,9 +1,7 @@
 package com.example.demo.repository;
 
 import com.example.demo.model.Collectivity;
-import com.example.demo.model.Gender;
 import com.example.demo.model.Member;
-import com.example.demo.model.MemberOccupation;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -30,7 +28,6 @@ public class MemberRepositoryImpl implements MemberRepository {
             pstmt.setString(1, id);
 
             ResultSet rs = pstmt.executeQuery();
-
             Member member = null;
 
             if (rs.next()) {
@@ -70,34 +67,17 @@ public class MemberRepositoryImpl implements MemberRepository {
                 pstmt.setNull(5, java.sql.Types.DATE);
             }
 
-            if (member.getGender() != null) {
-                pstmt.setString(6, mapGenderToDatabase(member.getGender()));
-            } else {
-                pstmt.setNull(6, java.sql.Types.VARCHAR);
-            }
-
+            pstmt.setString(6, member.getGender());
             pstmt.setString(7, member.getAddress());
             pstmt.setString(8, member.getProfession());
-
-            if (member.getPhoneNumber() != null) {
-                pstmt.setString(9, String.valueOf(member.getPhoneNumber()));
-            } else {
-                pstmt.setNull(9, java.sql.Types.VARCHAR);
-            }
-
+            pstmt.setString(9, member.getPhone());
             pstmt.setString(10, member.getEmail());
-
-            if (member.getOccupation() != null) {
-                pstmt.setString(11, mapOccupationToDatabase(member.getOccupation()));
-            } else {
-                pstmt.setNull(11, java.sql.Types.VARCHAR);
-            }
+            pstmt.setString(11, member.getOccupation());
 
             pstmt.executeUpdate();
             pstmt.close();
 
             return member;
-
         } catch (SQLException e) {
             throw new RuntimeException("Error while saving member", e);
         }
@@ -115,15 +95,13 @@ public class MemberRepositoryImpl implements MemberRepository {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                Member member = mapResultSetToMember(rs);
-                list.add(member);
+                list.add(mapResultSetToMember(rs));
             }
 
             rs.close();
             pstmt.close();
 
             return list;
-
         } catch (SQLException e) {
             throw new RuntimeException("Error while finding members by collectivityId", e);
         }
@@ -141,101 +119,17 @@ public class MemberRepositoryImpl implements MemberRepository {
             member.setBirthDate(birthDate.toLocalDate());
         }
 
-        member.setGender(mapGenderFromDatabase(rs.getString("gender")));
+        member.setGender(rs.getString("gender"));
         member.setAddress(rs.getString("address"));
         member.setProfession(rs.getString("profession"));
-
-        String phoneValue = rs.getString("phone");
-        if (phoneValue != null && !phoneValue.trim().isEmpty()) {
-            try {
-                member.setPhone(rs.getString(phoneValue));
-            } catch (NumberFormatException e) {
-                member.setPhone(null);
-            }
-        }
-
+        member.setPhone(rs.getString("phone"));
         member.setEmail(rs.getString("email"));
-        member.setOccupation(mapOccupationFromDatabase(rs.getString("occupation")));
+        member.setOccupation(rs.getString("occupation"));
 
-        String collectivityId = rs.getString("collectivity_id");
-        if (collectivityId != null) {
-            Collectivity collectivity = new Collectivity();
-            collectivity.setId(collectivityId);
-            member.setCollectivity(collectivity);
-        }
+        Collectivity collectivity = new Collectivity();
+        collectivity.setId(rs.getString("collectivity_id"));
+        member.setCollectivity(collectivity);
 
         return member;
-    }
-
-    private Gender mapGenderFromDatabase(String value) {
-        if (value == null) {
-            return null;
-        }
-
-        if ("M".equalsIgnoreCase(value)) {
-            return Gender.MALE;
-        }
-
-        if ("F".equalsIgnoreCase(value)) {
-            return Gender.FEMALE;
-        }
-
-        return null;
-    }
-
-    private String mapGenderToDatabase(Gender gender) {
-        if (gender == Gender.MALE) {
-            return "M";
-        }
-
-        if (gender == Gender.FEMALE) {
-            return "F";
-        }
-
-        return null;
-    }
-
-    private String mapOccupationFromDatabase(String value) {
-        if (value == null) {
-            return null;
-        }
-
-        if ("Président".equalsIgnoreCase(value)) {
-            return MemberOccupation.PRESIDENT;
-        }
-        if ("Vice président".equalsIgnoreCase(value)) {
-            return MemberOccupation.VICE_PRESIDENT;
-        }
-        if ("Secrétaire".equalsIgnoreCase(value)) {
-            return MemberOccupation.SECRETARY;
-        }
-        if ("Trésorier".equalsIgnoreCase(value)) {
-            return MemberOccupation.TREASURER;
-        }
-        if ("Confirmé".equalsIgnoreCase(value)) {
-            return MemberOccupation.SENIOR;
-        }
-
-        return null;
-    }
-
-    private String mapOccupationToDatabase(MemberOccupation occupation) {
-        if (occupation == MemberOccupation.PRESIDENT) {
-            return "Président";
-        }
-        if (occupation == MemberOccupation.VICE_PRESIDENT) {
-            return "Vice président";
-        }
-        if (occupation == MemberOccupation.SECRETARY) {
-            return "Secrétaire";
-        }
-        if (occupation == MemberOccupation.TREASURER) {
-            return "Trésorier";
-        }
-        if (occupation == MemberOccupation.SENIOR) {
-            return "Confirmé";
-        }
-
-        return null;
     }
 }
