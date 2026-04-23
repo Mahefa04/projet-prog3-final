@@ -1,42 +1,56 @@
 package com.example.demo.repository;
 
-
-import com.example.demo.database.DatabaseConnection;
 import com.example.demo.model.FinancialAccount;
-import java.sql.*;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class FinancialAccountRepository {
+
+    private final Connection connection;
+
+    public FinancialAccountRepository(Connection connection) {
+        this.connection = connection;
+    }
 
     public FinancialAccount findById(String id) throws SQLException {
         String sql = "SELECT * FROM financial_account WHERE id = ?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        PreparedStatement pstmt = connection.prepareStatement(sql);
+        pstmt.setString(1, id);
 
-            pstmt.setString(1, id);
-            ResultSet rs = pstmt.executeQuery();
+        ResultSet rs = pstmt.executeQuery();
 
-            if (rs.next()) {
-                return mapResultSetToAccount(rs);
-            }
+        FinancialAccount account = null;
+
+        if (rs.next()) {
+            account = mapResultSetToAccount(rs);
         }
-        return null;
+
+        rs.close();
+        pstmt.close();
+
+        return account;
     }
 
     public void updateAmount(String id, Double newAmount) throws SQLException {
         String sql = "UPDATE financial_account SET amount = ? WHERE id = ?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        PreparedStatement pstmt = connection.prepareStatement(sql);
 
-            pstmt.setDouble(1, newAmount);
-            pstmt.setString(2, id);
-            pstmt.executeUpdate();
-        }
+        pstmt.setDouble(1, newAmount);
+        pstmt.setString(2, id);
+
+        pstmt.executeUpdate();
+
+        pstmt.close();
     }
 
     private FinancialAccount mapResultSetToAccount(ResultSet rs) throws SQLException {
         FinancialAccount account = new FinancialAccount();
+
         account.setId(rs.getString("id"));
         account.setCollectivityId(rs.getString("collectivity_id"));
         account.setAccountType(rs.getString("account_type"));
@@ -49,6 +63,7 @@ public class FinancialAccountRepository {
         account.setBankBranchCode(rs.getInt("bank_branch_code"));
         account.setBankAccountNumber(rs.getInt("bank_account_number"));
         account.setBankAccountKey(rs.getInt("bank_account_key"));
+
         return account;
     }
 }
