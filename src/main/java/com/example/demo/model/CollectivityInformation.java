@@ -7,11 +7,6 @@ public class CollectivityInformation {
     public CollectivityInformation() {
     }
 
-    public CollectivityInformation(String name, Integer number) {
-        this.name = name;
-        this.number = number;
-    }
-
     public String getName() {
         return name;
     }

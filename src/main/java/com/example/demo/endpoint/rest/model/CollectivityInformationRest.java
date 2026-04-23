@@ -4,21 +4,19 @@ public class CollectivityInformationRest {
     private String name;
     private Integer number;
 
-    public CollectivityInformationRest(String name, Integer number) {
-        this.name = name;
-        this.number = number;
+    public CollectivityInformationRest() {
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Integer getNumber() {
         return number;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setNumber(Integer number) {
