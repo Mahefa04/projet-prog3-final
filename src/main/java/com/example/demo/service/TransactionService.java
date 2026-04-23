@@ -5,26 +5,25 @@ import com.example.demo.model.CollectivityTransaction;
 import com.example.demo.model.FinancialAccount;
 import com.example.demo.model.Member;
 import com.example.demo.repository.CollectivityRepository;
-import com.example.demo.repository.CollectivityTransactionRepository;
-import com.example.demo.repository.FinancialAccountRepository;
+import com.example.demo.repository.CollectivityTransactionRepositoryImpl;
+import com.example.demo.repository.FinancialAccountRepositoryImpl;
 import com.example.demo.repository.MemberRepository;
-import java.sql.SQLException;
+
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 public class TransactionService {
 
-    private CollectivityTransactionRepository transactionRepository;
+    private CollectivityTransactionRepositoryImpl transactionRepository;
     private CollectivityRepository collectivityRepository;
     private MemberRepository memberRepository;
-    private FinancialAccountRepository accountRepository;
+    private FinancialAccountRepositoryImpl accountRepository;
 
     public TransactionService() {
-        this.transactionRepository = new CollectivityTransactionRepository();
+        this.transactionRepository = new CollectivityTransactionRepositoryImpl();
         this.collectivityRepository = new CollectivityRepository();
         this.memberRepository = new MemberRepository();
-        this.accountRepository = new FinancialAccountRepository();
+        this.accountRepository = new FinancialAccountRepositoryImpl();
     }
 
     public List<CollectivityTransaction> getTransactionsByCollectivity(String collectivityId, LocalDate from, LocalDate to) throws Exception {

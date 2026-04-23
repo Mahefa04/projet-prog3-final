@@ -3,7 +3,7 @@ package com.example.demo.service;
 
 import com.example.demo.model.*;
 import com.example.demo.repository.*;
-import java.sql.SQLException;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,16 +13,16 @@ public class PaymentService {
 
     private MemberRepository memberRepository;
     private MembershipFeeRepository membershipFeeRepository;
-    private FinancialAccountRepository accountRepository;
-    private MemberPaymentRepository paymentRepository;
-    private CollectivityTransactionRepository transactionRepository;
+    private FinancialAccountRepositoryImpl accountRepository;
+    private MemberPaymentRepositoryImpl paymentRepository;
+    private CollectivityTransactionRepositoryImpl transactionRepository;
 
     public PaymentService() {
         this.memberRepository = new MemberRepository();
         this.membershipFeeRepository = new MembershipFeeRepository();
-        this.accountRepository = new FinancialAccountRepository();
-        this.paymentRepository = new MemberPaymentRepository();
-        this.transactionRepository = new CollectivityTransactionRepository();
+        this.accountRepository = new FinancialAccountRepositoryImpl();
+        this.paymentRepository = new MemberPaymentRepositoryImpl();
+        this.transactionRepository = new CollectivityTransactionRepositoryImpl();
     }
 
     public List<MemberPayment> createPayments(String memberId, List<MemberPayment> payments) throws Exception {
