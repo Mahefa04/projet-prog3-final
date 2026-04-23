@@ -19,7 +19,7 @@ public class MemberRestMapper {
         rest.setProfession(member.getProfession());
         rest.setPhone(member.getPhone());
         rest.setEmail(member.getEmail());
-        rest.setOccupation(member.getOccupation());
+        Member.setOccupation(11, member.getOccupation("occupation"));
 
         return rest;
     }

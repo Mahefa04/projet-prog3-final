@@ -88,4 +88,7 @@ public class MemberPayment {
     public void setCreationDate(LocalDate creationDate) {
         this.creationDate = creationDate;
     }
+
+    public void setPaymentDate(LocalDate today) {
+    }
 }

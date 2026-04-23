@@ -19,7 +19,7 @@ public class MemberFactory {
                 input.getGender(),
                 input.getAddress(),
                 input.getProfession(),
-                input.getPhoneNumber(),
+                input.getPhone(),
                 input.getEmail(),
                 input.getOccupation(),
                 collectivity,

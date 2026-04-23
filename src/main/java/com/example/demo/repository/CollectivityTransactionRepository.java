@@ -6,11 +6,8 @@ import java.util.List;
 
 public interface CollectivityTransactionRepository {
 
-    void save(CollectivityTransaction transaction);
-
-    List<CollectivityTransaction> findByCollectivityIdAndDateRange(
+    List<CollectivityTransaction> findByCollectivityIdAndTransactionDateBetween(
             String collectivityId,
             LocalDate from,
-            LocalDate to
-    );
+            LocalDate to);
 }

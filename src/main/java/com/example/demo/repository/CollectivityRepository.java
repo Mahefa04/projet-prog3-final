@@ -7,4 +7,8 @@ public interface CollectivityRepository {
     Collectivity findByName(String name);
     Collectivity findByNumber(Integer number);
     Collectivity save(Collectivity collectivity);
+
+    boolean existsByNumber(String number);
+
+    boolean existsByName(String name);
 }

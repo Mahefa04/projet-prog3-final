@@ -62,6 +62,6 @@ public class MemberValidator {
     }
 
     private boolean isConfirmedMember(Member member) {
-        return member.getOccupation() != MemberOccupation.JUNIOR;
+        return member.getOccupation("occupation") != MemberOccupation.JUNIOR;
     }
 }

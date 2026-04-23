@@ -14,9 +14,11 @@ import java.util.List;
 public class MemberRepositoryImpl implements MemberRepository {
 
     private final Connection connection;
+    private final Member member;
 
-    public MemberRepositoryImpl(Connection connection) {
+    public MemberRepositoryImpl(Connection connection, Member member) {
         this.connection = connection;
+        this.member = member;
     }
 
     @Override
@@ -72,7 +74,7 @@ public class MemberRepositoryImpl implements MemberRepository {
             pstmt.setString(8, member.getProfession());
             pstmt.setString(9, member.getPhone());
             pstmt.setString(10, member.getEmail());
-            pstmt.setString(11, member.getOccupation());
+            member.setOccupation(11, member.getOccupation("occupation"));
 
             pstmt.executeUpdate();
             pstmt.close();
@@ -124,7 +126,7 @@ public class MemberRepositoryImpl implements MemberRepository {
         member.setProfession(rs.getString("profession"));
         member.setPhone(rs.getString("phone"));
         member.setEmail(rs.getString("email"));
-        member.setOccupation(rs.getString("occupation"));
+        member.setOccupation(11, member.getOccupation("occupation"));
 
         Collectivity collectivity = new Collectivity();
         collectivity.setId(rs.getString("collectivity_id"));

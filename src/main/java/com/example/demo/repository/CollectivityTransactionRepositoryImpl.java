@@ -1,98 +1,80 @@
 package com.example.demo.repository;
 
 import com.example.demo.model.CollectivityTransaction;
-
+import com.example.demo.model.FinancialAccount;
+import com.example.demo.model.Member;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import javax.sql.DataSource;
+import org.springframework.stereotype.Repository;
 
-public class CollectivityTransactionRepositoryImpl {
+@Repository
+public class CollectivityTransactionRepositoryImpl implements CollectivityTransactionRepository {
 
-    private final Connection connection;
+    private final DataSource dataSource;
 
-    public CollectivityTransactionRepositoryImpl(Connection connection) {
-        this.connection = connection;
+    public CollectivityTransactionRepositoryImpl(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
-    public void save(CollectivityTransaction transaction) {
-        String sql = "INSERT INTO collectivity_transaction (id, collectivity_id, member_payment_id, amount, payment_mode, account_credited_id, creation_date) VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-        try {
-            PreparedStatement pstmt = connection.prepareStatement(sql);
-
-            pstmt.setString(1, transaction.getId());
-            pstmt.setString(2, transaction.getCollectivityId());
-            pstmt.setString(3, transaction.getMemberPaymentId());
-            pstmt.setDouble(4, transaction.getAmount());
-            pstmt.setString(5, transaction.getPaymentMode());
-            pstmt.setString(6, transaction.getAccountCreditedId());
-
-            if (transaction.getCreationDate() != null) {
-                pstmt.setDate(7, Date.valueOf(transaction.getCreationDate()));
-            } else {
-                pstmt.setNull(7, java.sql.Types.DATE);
-            }
-
-            pstmt.executeUpdate();
-            pstmt.close();
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error while saving collectivity transaction", e);
-        }
-    }
-
-    public List<CollectivityTransaction> findByCollectivityIdAndDateRange(
+    @Override
+    public List<CollectivityTransaction> findByCollectivityIdAndTransactionDateBetween(
             String collectivityId,
             LocalDate from,
-            LocalDate to
-    ) {
+            LocalDate to) {
+
         List<CollectivityTransaction> transactions = new ArrayList<>();
 
-        String sql = "SELECT * FROM collectivity_transaction WHERE collectivity_id = ? AND creation_date BETWEEN ? AND ? ORDER BY creation_date DESC";
+        String sql = """
+                SELECT id,
+                       collectivity_id,
+                       member_id,
+                       financial_account_id,
+                       amount,
+                       reason,
+                       transaction_date
+                FROM collectivity_transaction
+                WHERE collectivity_id = ?
+                  AND transaction_date BETWEEN ? AND ?
+                ORDER BY transaction_date
+                """;
 
-        try {
-            PreparedStatement pstmt = connection.prepareStatement(sql);
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setString(1, collectivityId);
+            statement.setDate(2, Date.valueOf(from));
+            statement.setDate(3, Date.valueOf(to));
 
-            pstmt.setString(1, collectivityId);
-            pstmt.setDate(2, Date.valueOf(from));
-            pstmt.setDate(3, Date.valueOf(to));
+            try (ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    CollectivityTransaction transaction = new CollectivityTransaction();
 
-            ResultSet rs = pstmt.executeQuery();
+                    transaction.setId(rs.getString("id"));
+                    transaction.setAmount(rs.getDouble("amount"));
+                    transaction.setReason(rs.getString("reason"));
 
-            while (rs.next()) {
-                transactions.add(mapResultSetToTransaction(rs));
+                    Member member = new Member();
+                    member.setId(rs.getString("member_id"));
+                    transaction.setMemberDebited(member);
+
+                    FinancialAccount account = new FinancialAccount();
+                    account.setId(rs.getString("financial_account_id"));
+                    transaction.setAccountCredited(account);
+
+                    transactions.add(transaction);
+                }
             }
-
-            rs.close();
-            pstmt.close();
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error while finding transactions", e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
         return transactions;
-    }
-
-    private CollectivityTransaction mapResultSetToTransaction(ResultSet rs) throws SQLException {
-        CollectivityTransaction transaction = new CollectivityTransaction();
-
-        transaction.setId(rs.getString("id"));
-        transaction.setCollectivityId(rs.getString("collectivity_id"));
-        transaction.setMemberPaymentId(rs.getString("member_payment_id"));
-        transaction.setAmount(rs.getDouble("amount"));
-        transaction.setPaymentMode(rs.getString("payment_mode"));
-        transaction.setAccountCreditedId(rs.getString("account_credited_id"));
-
-        Date date = rs.getDate("creation_date");
-        if (date != null) {
-            transaction.setCreationDate(date.toLocalDate());
-        }
-
-        return transaction;
     }
 }

@@ -8,4 +8,6 @@ public interface MemberPaymentRepository {
     void save(MemberPayment payment);
 
     List<MemberPayment> findByMemberId(String memberId);
+
+    List<MemberPayment> saveAll(List<MemberPayment> payments);
 }

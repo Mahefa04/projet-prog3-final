@@ -17,9 +17,9 @@ public class CollectivityFactory {
 
         Collectivity collectivity = new Collectivity();
 
-        collectivity.setLocation(input.getLocation());
+        collectivity.setLocality(input.getLocation());
         collectivity.setMembers(members);
-        collectivity.setNumber(generateNumber());
+        collectivity.setNumber(Integer.parseInt(generateNumber()));
         collectivity.setName(generateName(input.getLocation()));
 
         CollectivityStructure structure = new CollectivityStructure();

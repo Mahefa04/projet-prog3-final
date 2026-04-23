@@ -1,28 +1,14 @@
 package com.example.demo.model;
 
-
-
-import java.time.LocalDate;
-
 public class CollectivityTransaction {
+
     private String id;
-    private String collectivityId;
-    private String memberPaymentId;
+    private Member memberDebited;
+    private FinancialAccount accountCredited;
     private Double amount;
-    private String paymentMode;
-    private String accountCreditedId;
-    private LocalDate creationDate;
+    private String reason;
 
-    public CollectivityTransaction() {}
-
-    public CollectivityTransaction(String id, String collectivityId, String memberPaymentId, Double amount, String paymentMode, String accountCreditedId, LocalDate creationDate) {
-        this.id = id;
-        this.collectivityId = collectivityId;
-        this.memberPaymentId = memberPaymentId;
-        this.amount = amount;
-        this.paymentMode = paymentMode;
-        this.accountCreditedId = accountCreditedId;
-        this.creationDate = creationDate;
+    public CollectivityTransaction() {
     }
 
     public String getId() {
@@ -33,20 +19,20 @@ public class CollectivityTransaction {
         this.id = id;
     }
 
-    public String getCollectivityId() {
-        return collectivityId;
+    public Member getMemberDebited() {
+        return memberDebited;
     }
 
-    public void setCollectivityId(String collectivityId) {
-        this.collectivityId = collectivityId;
+    public void setMemberDebited(Member memberDebited) {
+        this.memberDebited = memberDebited;
     }
 
-    public String getMemberPaymentId() {
-        return memberPaymentId;
+    public FinancialAccount getAccountCredited() {
+        return accountCredited;
     }
 
-    public void setMemberPaymentId(String memberPaymentId) {
-        this.memberPaymentId = memberPaymentId;
+    public void setAccountCredited(FinancialAccount accountCredited) {
+        this.accountCredited = accountCredited;
     }
 
     public Double getAmount() {
@@ -57,27 +43,11 @@ public class CollectivityTransaction {
         this.amount = amount;
     }
 
-    public String getPaymentMode() {
-        return paymentMode;
+    public String getReason() {
+        return reason;
     }
 
-    public void setPaymentMode(String paymentMode) {
-        this.paymentMode = paymentMode;
-    }
-
-    public String getAccountCreditedId() {
-        return accountCreditedId;
-    }
-
-    public void setAccountCreditedId(String accountCreditedId) {
-        this.accountCreditedId = accountCreditedId;
-    }
-
-    public LocalDate getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(LocalDate creationDate) {
-        this.creationDate = creationDate;
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 }

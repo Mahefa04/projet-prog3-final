@@ -115,6 +115,16 @@ public class CollectivityRepositoryImpl implements CollectivityRepository {
         }
     }
 
+    @Override
+    public boolean existsByNumber(String number) {
+        return false;
+    }
+
+    @Override
+    public boolean existsByName(String name) {
+        return false;
+    }
+
     private Collectivity mapResultSetToCollectivity(ResultSet rs) throws SQLException {
         Collectivity collectivity = new Collectivity();
 
