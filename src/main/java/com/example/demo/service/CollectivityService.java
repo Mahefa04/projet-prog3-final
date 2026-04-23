@@ -9,6 +9,7 @@ import com.example.demo.model.CreateMembershipFee;
 import com.example.demo.model.MembershipFee;
 import com.example.demo.repository.CollectivityRepository;
 import com.example.demo.repository.MembershipFeeRepository;
+import com.example.demo.repository.MemberRepository;
 import com.example.demo.service.validator.MembershipFeeValidator;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,15 +22,18 @@ public class CollectivityService {
     private final CollectivityRepository collectivityRepository;
     private final MembershipFeeRepository membershipFeeRepository;
     private final MembershipFeeValidator membershipFeeValidator;
+    private final MemberRepository memberRepository;
 
     public CollectivityService(
             CollectivityRepository collectivityRepository,
             MembershipFeeRepository membershipFeeRepository,
-            MembershipFeeValidator membershipFeeValidator
+            MembershipFeeValidator membershipFeeValidator,
+            MemberRepository memberRepository
     ) {
         this.collectivityRepository = collectivityRepository;
         this.membershipFeeRepository = membershipFeeRepository;
         this.membershipFeeValidator = membershipFeeValidator;
+        this.memberRepository = memberRepository;
     }
 
     public Collectivity updateInformation(String id, CollectivityInformation info) {
@@ -126,5 +130,17 @@ public class CollectivityService {
         }
 
         return membershipFeeRepository.findByCollectivityId(id);
+    }
+
+    public Collectivity findById(String id) {
+        Collectivity collectivity = collectivityRepository.findById(id);
+        if (collectivity == null) {
+            throw new NotFoundException("Collectivity not found: " + id);
+        }
+        
+        List<com.example.demo.model.Member> members = memberRepository.findByCollectivityId(id);
+        collectivity.setMembers(members);
+        
+        return collectivity;
     }
 }
