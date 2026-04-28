@@ -3,6 +3,7 @@ package com.example.demo.repository;
 import com.example.demo.model.ActivityStatus;
 import com.example.demo.model.Frequency;
 import com.example.demo.model.MembershipFee;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,6 +11,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class MembershipFeeRepositoryImpl implements MembershipFeeRepository {
 
     private final Connection connection;

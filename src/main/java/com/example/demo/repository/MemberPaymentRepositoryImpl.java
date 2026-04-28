@@ -1,6 +1,7 @@
 package com.example.demo.repository;
 
 import com.example.demo.model.MemberPayment;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -10,7 +11,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MemberPaymentRepositoryImpl {
+@Repository
+public class MemberPaymentRepositoryImpl implements MemberPaymentRepository {
 
     private final Connection connection;
 
@@ -19,10 +21,13 @@ public class MemberPaymentRepositoryImpl {
     }
 
     public void save(MemberPayment payment) {
-        String sql = "INSERT INTO member_payment (id, member_id, membership_fee_id, amount, payment_mode, account_credited_id, creation_date) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = """
+                INSERT INTO member_payment
+                (id, member_id, membership_fee_id, amount, payment_mode, account_credited_id, creation_date)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                """;
 
-        try {
-            PreparedStatement pstmt = connection.prepareStatement(sql);
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
             pstmt.setString(1, payment.getId());
             pstmt.setString(2, payment.getMemberId());
@@ -38,7 +43,6 @@ public class MemberPaymentRepositoryImpl {
             }
 
             pstmt.executeUpdate();
-            pstmt.close();
 
         } catch (SQLException e) {
             throw new RuntimeException("Error while saving member payment", e);
@@ -46,24 +50,31 @@ public class MemberPaymentRepositoryImpl {
     }
 
     public List<MemberPayment> findByMemberId(String memberId) {
-        List<MemberPayment> payments = new ArrayList<MemberPayment>();
+        List<MemberPayment> payments = new ArrayList<>();
+
         String sql = "SELECT * FROM member_payment WHERE member_id = ?";
 
-        try {
-            PreparedStatement pstmt = connection.prepareStatement(sql);
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
             pstmt.setString(1, memberId);
 
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                payments.add(mapResultSetToPayment(rs));
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    payments.add(mapResultSetToPayment(rs));
+                }
             }
-
-            rs.close();
-            pstmt.close();
 
         } catch (SQLException e) {
             throw new RuntimeException("Error while finding payments by memberId", e);
+        }
+
+        return payments;
+    }
+
+    @Override
+    public List<MemberPayment> saveAll(List<MemberPayment> payments) {
+        for (MemberPayment payment : payments) {
+            save(payment);
         }
 
         return payments;

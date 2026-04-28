@@ -1,13 +1,18 @@
 package com.example.demo.repository;
 
 import com.example.demo.model.FinancialAccount;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
-public class FinancialAccountRepositoryImpl {
+@Repository
+public class FinancialAccountRepositoryImpl implements FinancialAccountRepository {
 
     private final Connection connection;
 
@@ -15,37 +20,72 @@ public class FinancialAccountRepositoryImpl {
         this.connection = connection;
     }
 
-    public FinancialAccount findById(String id) throws SQLException {
+    @Override
+    public FinancialAccount findById(String id) {
         String sql = "SELECT * FROM financial_account WHERE id = ?";
 
-        PreparedStatement pstmt = connection.prepareStatement(sql);
-        pstmt.setString(1, id);
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, id);
 
-        ResultSet rs = pstmt.executeQuery();
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToAccount(rs);
+                }
+            }
 
-        FinancialAccount account = null;
+            return null;
 
-        if (rs.next()) {
-            account = mapResultSetToAccount(rs);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-
-        rs.close();
-        pstmt.close();
-
-        return account;
     }
 
-    public void updateAmount(String id, Double newAmount) throws SQLException {
+    @Override
+    public void updateAmount(String id, Double newAmount) {
         String sql = "UPDATE financial_account SET amount = ? WHERE id = ?";
 
-        PreparedStatement pstmt = connection.prepareStatement(sql);
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setDouble(1, newAmount);
+            pstmt.setString(2, id);
 
-        pstmt.setDouble(1, newAmount);
-        pstmt.setString(2, id);
+            pstmt.executeUpdate();
 
-        pstmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-        pstmt.close();
+    @Override
+    public List<FinancialAccount> findByCollectivityId(String collectivityId) {
+        String sql = "SELECT * FROM financial_account WHERE collectivity_id = ?";
+
+        List<FinancialAccount> accounts = new ArrayList<>();
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, collectivityId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    accounts.add(mapResultSetToAccount(rs));
+                }
+            }
+
+            return accounts;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<FinancialAccount> findByCollectivityIdAtDate(String collectivityId, LocalDate at) {
+        /*
+         * Version simple :
+         * Pour l’instant, on retourne les comptes de la collectivité.
+         * Le paramètre "at" pourra être utilisé plus tard si tu ajoutes
+         * une table de transactions ou une date dans la table.
+         */
+        return findByCollectivityId(collectivityId);
     }
 
     private FinancialAccount mapResultSetToAccount(ResultSet rs) throws SQLException {

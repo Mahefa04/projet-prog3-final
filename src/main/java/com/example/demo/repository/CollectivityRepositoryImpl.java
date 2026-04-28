@@ -1,12 +1,14 @@
 package com.example.demo.repository;
 
 import com.example.demo.model.Collectivity;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Repository
 public class CollectivityRepositoryImpl implements CollectivityRepository {
 
     private final Connection connection;
@@ -69,7 +71,12 @@ public class CollectivityRepositoryImpl implements CollectivityRepository {
 
         try {
             PreparedStatement pstmt = connection.prepareStatement(sql);
-            pstmt.setInt(1, number);
+
+            if (number != null) {
+                pstmt.setString(1, String.valueOf(number));
+            } else {
+                pstmt.setNull(1, java.sql.Types.VARCHAR);
+            }
 
             ResultSet rs = pstmt.executeQuery();
             Collectivity collectivity = null;
@@ -97,9 +104,9 @@ public class CollectivityRepositoryImpl implements CollectivityRepository {
             pstmt.setString(1, collectivity.getName());
 
             if (collectivity.getNumber() != null) {
-                pstmt.setInt(2, collectivity.getNumber());
+                pstmt.setString(2, String.valueOf(collectivity.getNumber()));
             } else {
-                pstmt.setNull(2, java.sql.Types.INTEGER);
+                pstmt.setNull(2, java.sql.Types.VARCHAR);
             }
 
             pstmt.setString(3, collectivity.getLocality());
@@ -130,11 +137,11 @@ public class CollectivityRepositoryImpl implements CollectivityRepository {
 
         collectivity.setId(rs.getString("id"));
 
-        int number = rs.getInt("number");
-        if (rs.wasNull()) {
-            collectivity.setNumber(null);
+        String numberValue = rs.getString("number");
+        if (numberValue != null && !numberValue.trim().isEmpty()) {
+            collectivity.setNumber(Integer.valueOf(numberValue));
         } else {
-            collectivity.setNumber(number);
+            collectivity.setNumber(null);
         }
 
         collectivity.setName(rs.getString("name"));

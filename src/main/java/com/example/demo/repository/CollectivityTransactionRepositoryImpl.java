@@ -3,6 +3,8 @@ package com.example.demo.repository;
 import com.example.demo.model.CollectivityTransaction;
 import com.example.demo.model.FinancialAccount;
 import com.example.demo.model.Member;
+import org.springframework.stereotype.Repository;
+
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -10,16 +12,14 @@ import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import javax.sql.DataSource;
-import org.springframework.stereotype.Repository;
 
 @Repository
 public class CollectivityTransactionRepositoryImpl implements CollectivityTransactionRepository {
 
-    private final DataSource dataSource;
+    private final Connection connection;
 
-    public CollectivityTransactionRepositoryImpl(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public CollectivityTransactionRepositoryImpl(Connection connection) {
+        this.connection = connection;
     }
 
     @Override
@@ -44,10 +44,8 @@ public class CollectivityTransactionRepositoryImpl implements CollectivityTransa
                 ORDER BY transaction_date
                 """;
 
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sql)
-        ) {
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+
             statement.setString(1, collectivityId);
             statement.setDate(2, Date.valueOf(from));
             statement.setDate(3, Date.valueOf(to));
@@ -71,6 +69,7 @@ public class CollectivityTransactionRepositoryImpl implements CollectivityTransa
                     transactions.add(transaction);
                 }
             }
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

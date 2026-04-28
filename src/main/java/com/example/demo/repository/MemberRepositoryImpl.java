@@ -2,6 +2,7 @@ package com.example.demo.repository;
 
 import com.example.demo.model.Collectivity;
 import com.example.demo.model.Member;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -11,14 +12,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class MemberRepositoryImpl implements MemberRepository {
 
     private final Connection connection;
-    private final Member member;
 
-    public MemberRepositoryImpl(Connection connection, Member member) {
+    public MemberRepositoryImpl(Connection connection) {
         this.connection = connection;
-        this.member = member;
     }
 
     @Override
