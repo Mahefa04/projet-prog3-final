@@ -1,14 +1,13 @@
 package com.example.demo.repository;
 
 import com.example.demo.model.CollectivityTransaction;
-import com.example.demo.model.FinancialAccount;
-import com.example.demo.model.Member;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,54 +25,62 @@ public class CollectivityTransactionRepositoryImpl implements CollectivityTransa
     public List<CollectivityTransaction> findByCollectivityIdAndTransactionDateBetween(
             String collectivityId,
             LocalDate from,
-            LocalDate to) {
-
-        List<CollectivityTransaction> transactions = new ArrayList<>();
+            LocalDate to
+    ) {
+        List<CollectivityTransaction> transactions = new ArrayList<CollectivityTransaction>();
 
         String sql = """
-                SELECT id,
-                       collectivity_id,
-                       member_id,
-                       financial_account_id,
-                       amount,
-                       reason,
-                       transaction_date
-                FROM collectivity_transaction
-                WHERE collectivity_id = ?
-                  AND transaction_date BETWEEN ? AND ?
-                ORDER BY transaction_date
+                SELECT
+                    mp.id AS member_payment_id,
+                    m.collectivity_id AS collectivity_id,
+                    mp.amount AS amount,
+                    mp.payment_mode AS payment_mode,
+                    mp.account_credited_id AS account_credited_id,
+                    mp.creation_date AS creation_date
+                FROM member_payment mp
+                JOIN members m ON mp.member_id = m.id
+                WHERE m.collectivity_id = ?
+                  AND mp.creation_date BETWEEN ? AND ?
+                ORDER BY mp.creation_date DESC
                 """;
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try {
+            PreparedStatement pstmt = connection.prepareStatement(sql);
 
-            statement.setString(1, collectivityId);
-            statement.setDate(2, Date.valueOf(from));
-            statement.setDate(3, Date.valueOf(to));
+            pstmt.setString(1, collectivityId);
+            pstmt.setDate(2, Date.valueOf(from));
+            pstmt.setDate(3, Date.valueOf(to));
 
-            try (ResultSet rs = statement.executeQuery()) {
-                while (rs.next()) {
-                    CollectivityTransaction transaction = new CollectivityTransaction();
+            ResultSet rs = pstmt.executeQuery();
 
-                    transaction.setId(rs.getString("id"));
-                    transaction.setAmount(rs.getDouble("amount"));
-                    transaction.setReason(rs.getString("reason"));
-
-                    Member member = new Member();
-                    member.setId(rs.getString("member_id"));
-                    transaction.setMemberDebited(member);
-
-                    FinancialAccount account = new FinancialAccount();
-                    account.setId(rs.getString("financial_account_id"));
-                    transaction.setAccountCredited(account);
-
-                    transactions.add(transaction);
-                }
+            while (rs.next()) {
+                transactions.add(mapResultSetToTransaction(rs));
             }
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            rs.close();
+            pstmt.close();
+
+            return transactions;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error while finding collectivity transactions", e);
+        }
+    }
+
+    private CollectivityTransaction mapResultSetToTransaction(ResultSet rs) throws SQLException {
+        CollectivityTransaction transaction = new CollectivityTransaction();
+
+        transaction.setId("trx-" + rs.getString("member_payment_id"));
+        transaction.setCollectivityId(rs.getString("collectivity_id"));
+        transaction.setMemberPaymentId(rs.getString("member_payment_id"));
+        transaction.setAmount(rs.getDouble("amount"));
+        transaction.setPaymentMode(rs.getString("payment_mode"));
+        transaction.setAccountCreditedId(rs.getString("account_credited_id"));
+
+        Date creationDate = rs.getDate("creation_date");
+        if (creationDate != null) {
+            transaction.setCreationDate(creationDate.toLocalDate());
         }
 
-        return transactions;
+        return transaction;
     }
 }

@@ -1,53 +1,91 @@
 package com.example.demo.model;
 
+import java.time.LocalDate;
+
 public class CollectivityTransaction {
 
     private String id;
-    private Member memberDebited;
-    private FinancialAccount accountCredited;
+    private String collectivityId;
+    private String memberPaymentId;
     private Double amount;
-    private String reason;
+    private String paymentMode;
+    private String accountCreditedId;
+    private LocalDate creationDate;
 
     public CollectivityTransaction() {
+    }
+
+    public CollectivityTransaction(
+            String id,
+            String collectivityId,
+            String memberPaymentId,
+            Double amount,
+            String paymentMode,
+            String accountCreditedId,
+            LocalDate creationDate
+    ) {
+        this.id = id;
+        this.collectivityId = collectivityId;
+        this.memberPaymentId = memberPaymentId;
+        this.amount = amount;
+        this.paymentMode = paymentMode;
+        this.accountCreditedId = accountCreditedId;
+        this.creationDate = creationDate;
     }
 
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public String getCollectivityId() {
+        return collectivityId;
     }
 
-    public Member getMemberDebited() {
-        return memberDebited;
-    }
-
-    public void setMemberDebited(Member memberDebited) {
-        this.memberDebited = memberDebited;
-    }
-
-    public FinancialAccount getAccountCredited() {
-        return accountCredited;
-    }
-
-    public void setAccountCredited(FinancialAccount accountCredited) {
-        this.accountCredited = accountCredited;
+    public String getMemberPaymentId() {
+        return memberPaymentId;
     }
 
     public Double getAmount() {
         return amount;
     }
 
+    public String getPaymentMode() {
+        return paymentMode;
+    }
+
+    public String getAccountCreditedId() {
+        return accountCreditedId;
+    }
+
+    public LocalDate getCreationDate() {
+        return creationDate;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setCollectivityId(String collectivityId) {
+        this.collectivityId = collectivityId;
+    }
+
+    public void setMemberPaymentId(String memberPaymentId) {
+        this.memberPaymentId = memberPaymentId;
+    }
+
     public void setAmount(Double amount) {
         this.amount = amount;
     }
 
-    public String getReason() {
-        return reason;
+    public void setPaymentMode(String paymentMode) {
+        this.paymentMode = paymentMode;
     }
 
-    public void setReason(String reason) {
-        this.reason = reason;
+    public void setAccountCreditedId(String accountCreditedId) {
+        this.accountCreditedId = accountCreditedId;
+    }
+
+    public void setCreationDate(LocalDate creationDate) {
+        this.creationDate = creationDate;
     }
 }

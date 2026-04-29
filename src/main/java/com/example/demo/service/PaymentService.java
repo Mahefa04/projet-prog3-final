@@ -1,47 +1,42 @@
 package com.example.demo.service;
 
+import com.example.demo.endpoint.rest.model.CreateMemberPaymentRest;
 import com.example.demo.model.MemberPayment;
-import com.example.demo.repository.CollectivityTransactionRepository;
-import com.example.demo.repository.FinancialAccountRepository;
 import com.example.demo.repository.MemberPaymentRepository;
-import com.example.demo.repository.MemberRepository;
-import com.example.demo.repository.MembershipFeeRepository;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import org.springframework.stereotype.Service;
 
 @Service
 public class PaymentService {
 
-    private final MemberRepository memberRepository;
-    private final MembershipFeeRepository membershipFeeRepository;
-    private final FinancialAccountRepository accountRepository;
-    private final MemberPaymentRepository paymentRepository;
-    private final CollectivityTransactionRepository transactionRepository;
+    private final MemberPaymentRepository memberPaymentRepository;
 
-    public PaymentService(
-            MemberRepository memberRepository,
-            MembershipFeeRepository membershipFeeRepository,
-            FinancialAccountRepository accountRepository,
-            MemberPaymentRepository paymentRepository,
-            CollectivityTransactionRepository transactionRepository
-    ) {
-        this.memberRepository = memberRepository;
-        this.membershipFeeRepository = membershipFeeRepository;
-        this.accountRepository = accountRepository;
-        this.paymentRepository = paymentRepository;
-        this.transactionRepository = transactionRepository;
+    public PaymentService(MemberPaymentRepository memberPaymentRepository) {
+        this.memberPaymentRepository = memberPaymentRepository;
     }
 
-    public List<MemberPayment> createPayments(String memberId, List<MemberPayment> payments) {
-        LocalDate today = LocalDate.now();
+    public List<MemberPayment> createPayments(String memberId, List<CreateMemberPaymentRest> requests) {
+        List<MemberPayment> payments = new ArrayList<MemberPayment>();
 
-        for (MemberPayment payment : payments) {
+        for (int i = 0; i < requests.size(); i++) {
+            CreateMemberPaymentRest request = requests.get(i);
+
+            MemberPayment payment = new MemberPayment();
+
+            payment.setId("pay-" + UUID.randomUUID().toString().substring(0, 8));
             payment.setMemberId(memberId);
-            payment.setPaymentDate(today);
+            payment.setMembershipFeeId(request.getMembershipFeeIdentifier());
+            payment.setAmount(request.getAmount());
+            payment.setPaymentMode(request.getPaymentMode());
+            payment.setAccountCreditedId(request.getAccountCreditedIdentifier());
+            payment.setCreationDate(LocalDate.now());
+
+            payments.add(payment);
         }
 
-        return paymentRepository.saveAll(payments);
+        return memberPaymentRepository.saveAll(payments);
     }
 }
