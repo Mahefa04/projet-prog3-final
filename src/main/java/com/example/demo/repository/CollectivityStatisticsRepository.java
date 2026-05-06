@@ -9,7 +9,7 @@ public interface CollectivityStatisticsRepository {
 
     boolean collectivityExists(String collectivityId);
 
-    List<CollectivityStatistics> findLocalStatistics(
+    List<CollectivityStatistics> findStatisticsByCollectivity(
             String collectivityId,
             LocalDate from,
             LocalDate to

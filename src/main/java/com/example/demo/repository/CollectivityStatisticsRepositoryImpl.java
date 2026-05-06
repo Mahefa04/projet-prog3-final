@@ -3,29 +3,31 @@ package com.example.demo.repository;
 import com.example.demo.model.CollectivityStatistics;
 import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
 public class CollectivityStatisticsRepositoryImpl implements CollectivityStatisticsRepository {
 
-    private final Connection connection;
-    public CollectivityStatisticsRepositoryImpl(Connection connection) {
-        this.connection = connection;
+    private final DataSource dataSource;
+
+    public CollectivityStatisticsRepositoryImpl(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     @Override
     public boolean collectivityExists(String collectivityId) {
         String sql = "SELECT COUNT(*) FROM collectivities WHERE id = ?";
 
-        try {
-             PreparedStatement pstmt = connection.prepareStatement(sql);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
             pstmt.setString(1, collectivityId);
 
@@ -38,22 +40,24 @@ public class CollectivityStatisticsRepositoryImpl implements CollectivityStatist
             rs.close();
 
             return false;
+
         } catch (SQLException e) {
             throw new RuntimeException("Error while checking collectivity existence", e);
         }
     }
 
     @Override
-    public List<CollectivityStatistics> findLocalStatistics(
+    public List<CollectivityStatistics> findStatisticsByCollectivity(
             String collectivityId,
             LocalDate from,
             LocalDate to
     ) {
-        List<CollectivityStatistics> statistics = new ArrayList<CollectivityStatistics>();
+        List<CollectivityStatistics> result = new ArrayList<CollectivityStatistics>();
 
         String sql = """
-                WITH expected_fee AS (
-                    SELECT COALESCE(SUM(mf.amount), 0) AS expected_amount
+                WITH active_fee AS (
+                    SELECT
+                        COALESCE(SUM(mf.amount), 0) AS expected_amount
                     FROM membership_fee mf
                     WHERE mf.collectivity_id = ?
                       AND mf.status = 'ACTIVE'
@@ -64,11 +68,15 @@ public class CollectivityStatisticsRepositoryImpl implements CollectivityStatist
                         m.id AS member_id,
                         m.first_name AS first_name,
                         m.last_name AS last_name,
-                        COALESCE(SUM(mp.amount), 0) AS earned_amount
+                        COALESCE(SUM(
+                            CASE
+                                WHEN mp.creation_date BETWEEN ? AND ? THEN mp.amount
+                                ELSE 0
+                            END
+                        ), 0) AS earned_amount
                     FROM members m
                     LEFT JOIN member_payment mp
                         ON mp.member_id = m.id
-                       AND mp.creation_date BETWEEN ? AND ?
                     WHERE m.collectivity_id = ?
                     GROUP BY m.id, m.first_name, m.last_name
                 )
@@ -77,17 +85,14 @@ public class CollectivityStatisticsRepositoryImpl implements CollectivityStatist
                     pbm.first_name,
                     pbm.last_name,
                     pbm.earned_amount,
-                    CASE
-                        WHEN expected_fee.expected_amount - pbm.earned_amount < 0 THEN 0
-                        ELSE expected_fee.expected_amount - pbm.earned_amount
-                    END AS potential_unpaid_amount
+                    GREATEST(active_fee.expected_amount - pbm.earned_amount, 0) AS potential_unpaid_amount
                 FROM paid_by_member pbm
-                CROSS JOIN expected_fee
+                CROSS JOIN active_fee
                 ORDER BY pbm.member_id
                 """;
 
-        try {
-             PreparedStatement pstmt = connection.prepareStatement(sql);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
             pstmt.setString(1, collectivityId);
             pstmt.setDate(2, Date.valueOf(to));
@@ -98,18 +103,19 @@ public class CollectivityStatisticsRepositoryImpl implements CollectivityStatist
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                statistics.add(mapResultSetToStatistics(rs));
+                result.add(mapResultSetToCollectivityStatistics(rs));
             }
 
             rs.close();
 
-            return statistics;
+            return result;
+
         } catch (SQLException e) {
-            throw new RuntimeException("Error while finding collectivity local statistics", e);
+            throw new RuntimeException("Error while finding collectivity statistics", e);
         }
     }
 
-    private CollectivityStatistics mapResultSetToStatistics(ResultSet rs) throws SQLException {
+    private CollectivityStatistics mapResultSetToCollectivityStatistics(ResultSet rs) throws SQLException {
         CollectivityStatistics statistics = new CollectivityStatistics();
 
         statistics.setMemberId(rs.getString("member_id"));
