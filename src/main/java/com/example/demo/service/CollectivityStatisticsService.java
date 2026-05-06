@@ -18,7 +18,7 @@ public class CollectivityStatisticsService {
         this.collectivityStatisticsRepository = collectivityStatisticsRepository;
     }
 
-    public List<CollectivityStatistics> getLocalStatistics(
+    public List<CollectivityStatistics> getStatisticsByCollectivity(
             String collectivityId,
             LocalDate from,
             LocalDate to
@@ -35,6 +35,6 @@ public class CollectivityStatisticsService {
             throw new NotFoundException("Collectivity not found: " + collectivityId);
         }
 
-        return collectivityStatisticsRepository.findLocalStatistics(collectivityId, from, to);
+        return collectivityStatisticsRepository.findStatisticsByCollectivity(collectivityId, from, to);
     }
 }
