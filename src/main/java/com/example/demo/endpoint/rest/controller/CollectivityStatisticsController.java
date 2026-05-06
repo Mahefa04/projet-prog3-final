@@ -38,7 +38,7 @@ public class CollectivityStatisticsController {
         List<CollectivityLocalStatisticsRest> response;
         int i;
 
-        statistics = collectivityStatisticsService.getLocalStatistics(id, from, to);
+        statistics = collectivityStatisticsService.getStatisticsByCollectivity(id, from, to);
 
         response = new ArrayList<CollectivityLocalStatisticsRest>();
 
