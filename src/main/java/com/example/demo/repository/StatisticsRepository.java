@@ -17,10 +17,10 @@ import java.util.List;
 @Repository
 public class StatisticsRepository {
 
-    private final DataSource dataSource;
+    private final Connection connection;
 
-    public StatisticsRepository(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public StatisticsRepository(Connection connection) {
+        this.connection = connection;
     }
 
     public List<Statistics> findGlobalStatistics(LocalDate from, LocalDate to) {
@@ -90,8 +90,8 @@ public class StatisticsRepository {
                 ORDER BY c.id
                 """;
 
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try {
+             PreparedStatement pstmt = connection.prepareStatement(sql);
 
             pstmt.setDate(1, Date.valueOf(to));
             pstmt.setDate(2, Date.valueOf(from));
