@@ -2,7 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.NotFoundException;
-import com.example.demo.model.CollectivityLocalStatistics;
+import com.example.demo.model.CollectivityStatistics;
 import com.example.demo.repository.CollectivityStatisticsRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,7 @@ public class CollectivityStatisticsService {
         this.collectivityStatisticsRepository = collectivityStatisticsRepository;
     }
 
-    public List<CollectivityLocalStatistics> getLocalStatistics(
+    public List<CollectivityStatistics> getLocalStatistics(
             String collectivityId,
             LocalDate from,
             LocalDate to

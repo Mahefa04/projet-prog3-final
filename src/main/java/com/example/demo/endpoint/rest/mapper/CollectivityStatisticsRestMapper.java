@@ -1,13 +1,13 @@
 package com.example.demo.endpoint.rest.mapper;
 
 import com.example.demo.endpoint.rest.model.CollectivityLocalStatisticsRest;
-import com.example.demo.model.CollectivityLocalStatistics;
+import com.example.demo.model.CollectivityStatistics;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CollectivityStatisticsRestMapper {
 
-    public CollectivityLocalStatisticsRest toRest(CollectivityLocalStatistics domain) {
+    public CollectivityLocalStatisticsRest toRest(CollectivityStatistics domain) {
         CollectivityLocalStatisticsRest rest = new CollectivityLocalStatisticsRest();
 
         rest.setMemberId(domain.getMemberId());

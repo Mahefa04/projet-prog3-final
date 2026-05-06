@@ -18,7 +18,7 @@ public class StatisticsRepository {
 
     public List<Map<String, Object>> getAllCollectivities() {
         List<Map<String, Object>> collectivities = new ArrayList<>();
-        String sql = "SELECT id, name FROM collectivity";
+        String sql = "SELECT id, name FROM collectivities";
         try (Connection conn = dataSourceConfig.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -35,7 +35,7 @@ public class StatisticsRepository {
     }
 
     public int getTotalMembersByCollectivity(String collectivityId) {
-        String sql = "SELECT COUNT(*) FROM member WHERE collectivity_id = ?";
+        String sql = "SELECT COUNT(*) FROM members WHERE collectivity_id = ?";
         try (Connection conn = dataSourceConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, collectivityId);
@@ -50,7 +50,7 @@ public class StatisticsRepository {
     }
 
     public int getNewMembersCountByCollectivity(String collectivityId, LocalDate from, LocalDate to) {
-        String sql = "SELECT COUNT(*) FROM member WHERE collectivity_id = ? AND joining_date BETWEEN ? AND ?";
+        String sql = "SELECT COUNT(*) FROM members WHERE collectivity_id = ? AND joining_date BETWEEN ? AND ?";
         try (Connection conn = dataSourceConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, collectivityId);

@@ -1,6 +1,6 @@
 package com.example.demo.model;
 
-public class CollectivityLocalStatistics {
+public class CollectivityStatistics {
 
     private String memberId;
     private String firstName;
@@ -8,21 +8,7 @@ public class CollectivityLocalStatistics {
     private Double earnedAmount;
     private Double potentialUnpaidAmount;
 
-    public CollectivityLocalStatistics() {
-    }
-
-    public CollectivityLocalStatistics(
-            String memberId,
-            String firstName,
-            String lastName,
-            Double earnedAmount,
-            Double potentialUnpaidAmount
-    ) {
-        this.memberId = memberId;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.earnedAmount = earnedAmount;
-        this.potentialUnpaidAmount = potentialUnpaidAmount;
+    public CollectivityStatistics() {
     }
 
     public String getMemberId() {

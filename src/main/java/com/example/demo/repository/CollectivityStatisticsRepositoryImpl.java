@@ -1,6 +1,6 @@
 package com.example.demo.repository;
 
-import com.example.demo.model.CollectivityLocalStatistics;
+import com.example.demo.model.CollectivityStatistics;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
@@ -44,12 +44,12 @@ public class CollectivityStatisticsRepositoryImpl implements CollectivityStatist
     }
 
     @Override
-    public List<CollectivityLocalStatistics> findLocalStatistics(
+    public List<CollectivityStatistics> findLocalStatistics(
             String collectivityId,
             LocalDate from,
             LocalDate to
     ) {
-        List<CollectivityLocalStatistics> statistics = new ArrayList<CollectivityLocalStatistics>();
+        List<CollectivityStatistics> statistics = new ArrayList<CollectivityStatistics>();
 
         String sql = """
                 WITH expected_fee AS (
@@ -109,8 +109,8 @@ public class CollectivityStatisticsRepositoryImpl implements CollectivityStatist
         }
     }
 
-    private CollectivityLocalStatistics mapResultSetToStatistics(ResultSet rs) throws SQLException {
-        CollectivityLocalStatistics statistics = new CollectivityLocalStatistics();
+    private CollectivityStatistics mapResultSetToStatistics(ResultSet rs) throws SQLException {
+        CollectivityStatistics statistics = new CollectivityStatistics();
 
         statistics.setMemberId(rs.getString("member_id"));
         statistics.setFirstName(rs.getString("first_name"));
