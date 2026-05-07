@@ -47,10 +47,13 @@ public class AttendanceService {
 
             ActivityMemberAttendance attendance = new ActivityMemberAttendance();
 
-            attendance.setId("ATT-" + activityId + "-" + request.getMemberIdentifier());
+            attendance.setId(
+                    "ATT-" + activityId + "-" + request.getMemberIdentifier() + "-" + request.getAttendanceDate()
+            );
             attendance.setActivityId(activityId);
             attendance.setMemberId(request.getMemberIdentifier());
             attendance.setAttendanceStatus(request.getAttendanceStatus());
+            attendance.setAttendanceDate(request.getAttendanceDate());
 
             MemberDescription description = new MemberDescription();
             description.setId(member.getId());

@@ -5,10 +5,7 @@ import com.example.demo.model.MemberDescription;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,9 +25,10 @@ public class AttendanceRepositoryImpl implements AttendanceRepository {
                     id,
                     activity_id,
                     member_id,
-                    attendance_status
+                    attendance_status,
+                    attendance_date
                 )
-                VALUES (?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?)
                 """;
 
         try {
@@ -40,6 +38,7 @@ public class AttendanceRepositoryImpl implements AttendanceRepository {
             pstmt.setString(2, attendance.getActivityId());
             pstmt.setString(3, attendance.getMemberId());
             pstmt.setString(4, attendance.getAttendanceStatus());
+            pstmt.setDate(5, Date.valueOf(attendance.getAttendanceDate()));
 
             pstmt.executeUpdate();
 

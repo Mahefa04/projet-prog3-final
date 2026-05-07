@@ -16,6 +16,7 @@ public class AttendanceRestMapper {
 
         domain.setMemberIdentifier(rest.getMemberIdentifier());
         domain.setAttendanceStatus(rest.getAttendanceStatus());
+        domain.setAttendanceDate(rest.getAttendanceDate());
 
         return domain;
     }
@@ -26,7 +27,7 @@ public class AttendanceRestMapper {
         rest.setId(domain.getId());
         rest.setAttendanceStatus(domain.getAttendanceStatus());
         rest.setMemberDescription(toMemberDescriptionRest(domain.getMemberDescription()));
-
+        rest.setAttendanceDate(domain.getAttendanceDate());
         return rest;
     }
 

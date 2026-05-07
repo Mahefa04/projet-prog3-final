@@ -1,5 +1,7 @@
 package com.example.demo.model;
 
+import java.time.LocalDate;
+
 public class ActivityMemberAttendance {
 
     private String id;
@@ -7,6 +9,7 @@ public class ActivityMemberAttendance {
     private String memberId;
     private MemberDescription memberDescription;
     private String attendanceStatus;
+    private LocalDate attendanceDate;
 
     public ActivityMemberAttendance() {
     }
@@ -43,6 +46,14 @@ public class ActivityMemberAttendance {
 
     public String getAttendanceStatus() {
         return attendanceStatus;
+    }
+
+    public LocalDate getAttendanceDate() {
+        return attendanceDate;
+    }
+
+    public void setAttendanceDate(LocalDate attendanceDate) {
+        this.attendanceDate = attendanceDate;
     }
 
     public void setId(String id) {
