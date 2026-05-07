@@ -1,4 +1,3 @@
-
 package com.example.demo.repository;
 
 import com.example.demo.model.Statistics;
@@ -30,7 +29,7 @@ public class StatisticsRepository {
                     SELECT
                         c.id AS collectivity_id,
                         COALESCE(SUM(mf.amount), 0) AS expected_amount
-                    FROM collectivities c
+                    FROM collectivity c
                     LEFT JOIN membership_fee mf
                         ON mf.collectivity_id = c.id
                        AND mf.status = 'ACTIVE'
@@ -47,7 +46,7 @@ public class StatisticsRepository {
                                 ELSE 0
                             END
                         ), 0) AS paid_amount
-                    FROM members m
+                    FROM member m
                     LEFT JOIN member_payment mp
                         ON mp.member_id = m.id
                     GROUP BY m.id, m.collectivity_id
@@ -65,6 +64,27 @@ public class StatisticsRepository {
                     FROM paid_by_member pbm
                     JOIN active_fee_by_collectivity af
                         ON af.collectivity_id = pbm.collectivity_id
+                ),
+                attendance_rate_by_member AS (
+                    SELECT
+                        m.collectivity_id,
+                        m.id AS member_id,
+                        CASE
+                            WHEN COUNT(a.id) = 0 THEN 0
+                            ELSE COUNT(CASE WHEN a.status = 'PRESENT' THEN 1 END) * 100.0 / COUNT(a.id)
+                        END AS attendance_rate
+                    FROM member m
+                    LEFT JOIN attendance a ON m.id = a.member_id
+                    LEFT JOIN activity act ON a.activity_id = act.id
+                        AND act.activity_date BETWEEN ? AND ?
+                    GROUP BY m.collectivity_id, m.id
+                ),
+                global_attendance AS (
+                    SELECT
+                        collectivity_id,
+                        AVG(attendance_rate) AS global_attendance_rate
+                    FROM attendance_rate_by_member
+                    GROUP BY collectivity_id
                 )
                 SELECT
                     c.id AS collectivity_id,
@@ -77,26 +97,31 @@ public class StatisticsRepository {
                     END AS up_to_date_percentage,
                     COUNT(
                         CASE
-                            WHEN m.created_at BETWEEN ? AND ? THEN 1
+                            WHEN m.joining_date BETWEEN ? AND ? THEN 1
                         END
-                    ) AS new_members
-                FROM collectivities c
-                LEFT JOIN members m
+                    ) AS new_members,
+                    COALESCE(ga.global_attendance_rate, 0) AS global_attendance_rate
+                FROM collectivity c
+                LEFT JOIN member m
                     ON m.collectivity_id = c.id
                 LEFT JOIN member_status ms
                     ON ms.member_id = m.id
-                GROUP BY c.id, c.name
+                LEFT JOIN global_attendance ga
+                    ON ga.collectivity_id = c.id
+                GROUP BY c.id, c.name, ga.global_attendance_rate
                 ORDER BY c.id
                 """;
 
         try {
-             PreparedStatement pstmt = connection.prepareStatement(sql);
+            PreparedStatement pstmt = connection.prepareStatement(sql);
 
             pstmt.setDate(1, Date.valueOf(to));
             pstmt.setDate(2, Date.valueOf(from));
             pstmt.setDate(3, Date.valueOf(to));
             pstmt.setDate(4, Date.valueOf(from));
             pstmt.setDate(5, Date.valueOf(to));
+            pstmt.setDate(6, Date.valueOf(from));
+            pstmt.setDate(7, Date.valueOf(to));
 
             ResultSet rs = pstmt.executeQuery();
 
@@ -122,6 +147,7 @@ public class StatisticsRepository {
         statistics.setUpToDateMembers(rs.getInt("up_to_date_members"));
         statistics.setUpToDatePercentage(rs.getDouble("up_to_date_percentage"));
         statistics.setNewMembers(rs.getInt("new_members"));
+        statistics.setGlobalAttendanceRate(rs.getDouble("global_attendance_rate"));
 
         return statistics;
     }
