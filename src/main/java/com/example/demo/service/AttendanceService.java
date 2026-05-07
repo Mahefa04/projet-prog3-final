@@ -36,7 +36,7 @@ public class AttendanceService {
                 throw new Exception("Member not found: " + attendance.getMemberId());
             }
 
-            if (!member.getCollectivityId().equals(collectivityId)) {
+            if (!member.getCollectivity().equals(collectivityId)) {
                 throw new Exception("Member does not belong to collectivity: " + collectivityId);
             }
 
