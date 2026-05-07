@@ -16,18 +16,18 @@ import java.util.List;
 @Repository
 public class CollectivityActivityRepositoryImpl implements CollectivityActivityRepository {
 
-    private final DataSource dataSource;
+    private final Connection connection;
 
-    public CollectivityActivityRepositoryImpl(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public CollectivityActivityRepositoryImpl(Connection connection) {
+        this.connection = connection;
     }
 
     @Override
     public boolean collectivityExists(String collectivityId) {
         String sql = "SELECT COUNT(*) FROM collectivities WHERE id = ?";
 
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try {
+             PreparedStatement pstmt = connection.prepareStatement(sql);
 
             pstmt.setString(1, collectivityId);
 
@@ -60,8 +60,8 @@ public class CollectivityActivityRepositoryImpl implements CollectivityActivityR
                 VALUES (?, ?, ?, ?, ?, ?, ?)
                 """;
 
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try {
+             PreparedStatement pstmt = connection.prepareStatement(sql);
 
             pstmt.setString(1, activity.getId());
             pstmt.setString(2, collectivityId);
@@ -111,8 +111,8 @@ public class CollectivityActivityRepositoryImpl implements CollectivityActivityR
                 ORDER BY id
                 """;
 
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try {
+             PreparedStatement pstmt = connection.prepareStatement(sql);
 
             pstmt.setString(1, collectivityId);
 
