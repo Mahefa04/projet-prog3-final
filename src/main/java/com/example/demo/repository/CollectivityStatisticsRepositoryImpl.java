@@ -17,18 +17,18 @@ import java.util.List;
 @Repository
 public class CollectivityStatisticsRepositoryImpl implements CollectivityStatisticsRepository {
 
-    private final DataSource dataSource;
+    private final Connection connection;
 
-    public CollectivityStatisticsRepositoryImpl(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public CollectivityStatisticsRepositoryImpl(Connection connection) {
+        this.connection = connection;
     }
 
     @Override
     public boolean collectivityExists(String collectivityId) {
         String sql = "SELECT COUNT(*) FROM collectivities WHERE id = ?";
 
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try {
+             PreparedStatement pstmt = connection.prepareStatement(sql);
 
             pstmt.setString(1, collectivityId);
 
@@ -126,8 +126,8 @@ public class CollectivityStatisticsRepositoryImpl implements CollectivityStatist
                 ORDER BY mb.member_id
                 """;
 
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try {
+             PreparedStatement pstmt = connection.prepareStatement(sql);
 
             pstmt.setString(1, collectivityId);
             pstmt.setDate(2, Date.valueOf(to));
