@@ -110,7 +110,7 @@ public class Member {
         this.email = email;
     }
 
-    public MemberOccupation getOccupation(String occupation) {
+    public MemberOccupation getOccupation() {
         return this.occupation;
     }
 

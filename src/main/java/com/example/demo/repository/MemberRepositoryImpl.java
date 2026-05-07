@@ -74,7 +74,7 @@ public class MemberRepositoryImpl implements MemberRepository {
             pstmt.setString(8, member.getProfession());
             pstmt.setString(9, member.getPhone());
             pstmt.setString(10, member.getEmail());
-            member.setOccupation(11, member.getOccupation("occupation"));
+            member.setOccupation(11, member.getOccupation());
 
             pstmt.executeUpdate();
             pstmt.close();
@@ -126,7 +126,7 @@ public class MemberRepositoryImpl implements MemberRepository {
         member.setProfession(rs.getString("profession"));
         member.setPhone(rs.getString("phone"));
         member.setEmail(rs.getString("email"));
-        member.setOccupation(11, member.getOccupation("occupation"));
+        member.setOccupation(11, member.getOccupation());
 
         Collectivity collectivity = new Collectivity();
         collectivity.setId(rs.getString("collectivity_id"));

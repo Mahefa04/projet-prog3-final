@@ -1,14 +1,15 @@
 package com.example.demo.service;
 
-import com.example.demo.model.Attendance;
+import com.example.demo.model.ActivityMemberAttendance;
+import com.example.demo.model.CreateActivityMemberAttendance;
 import com.example.demo.model.Member;
+import com.example.demo.model.MemberDescription;
 import com.example.demo.repository.AttendanceRepository;
 import com.example.demo.repository.MemberRepository;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class AttendanceService {
@@ -16,58 +17,61 @@ public class AttendanceService {
     private final AttendanceRepository attendanceRepository;
     private final MemberRepository memberRepository;
 
-    public AttendanceService(AttendanceRepository attendanceRepository,
-                             MemberRepository memberRepository) {
+    public AttendanceService(
+            AttendanceRepository attendanceRepository,
+            MemberRepository memberRepository
+    ) {
         this.attendanceRepository = attendanceRepository;
         this.memberRepository = memberRepository;
     }
 
-    public List<Attendance> createAttendances(String collectivityId, String activityId, List<Attendance> attendances) throws Exception {
-        
-        if (activityId == null || activityId.trim().isEmpty()) {
-            throw new Exception("Activity ID is required");
-        }
+    public List<ActivityMemberAttendance> createAttendances(
+            String collectivityId,
+            String activityId,
+            List<CreateActivityMemberAttendance> requests
+    ) throws Exception {
+        List<ActivityMemberAttendance> createdAttendances = new ArrayList<ActivityMemberAttendance>();
 
-        List<Attendance> createdAttendances = new ArrayList<>();
+        for (int i = 0; i < requests.size(); i++) {
+            CreateActivityMemberAttendance request = requests.get(i);
 
-        for (Attendance attendance : attendances) {
-            Member member = memberRepository.findById(attendance.getMemberId());
+            if (request.getMemberIdentifier() == null) {
+                throw new Exception("memberIdentifier is required");
+            }
+
+            Member member = memberRepository.findById(request.getMemberIdentifier());
+
             if (member == null) {
-                throw new Exception("Member not found: " + attendance.getMemberId());
+                throw new Exception("Member not found: " + request.getMemberIdentifier());
             }
 
-            if (!member.getCollectivity().equals(collectivityId)) {
-                throw new Exception("Member does not belong to collectivity: " + collectivityId);
-            }
+            ActivityMemberAttendance attendance = new ActivityMemberAttendance();
 
-            if (attendanceRepository.existsByActivityIdAndMemberId(activityId, attendance.getMemberId())) {
-                throw new Exception("Attendance already recorded for member: " + attendance.getMemberId() + ". Cannot modify.");
-            }
-
-            if (attendance.getStatus() == null || 
-                (!attendance.getStatus().equals("PRESENT") && 
-                 !attendance.getStatus().equals("ABSENT") && 
-                 !attendance.getStatus().equals("EXCUSED"))) {
-                throw new Exception("Status must be PRESENT, ABSENT, or EXCUSED");
-            }
-
-            String attendanceId = "ATT-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-            attendance.setId(attendanceId);
+            attendance.setId("ATT-" + activityId + "-" + request.getMemberIdentifier());
             attendance.setActivityId(activityId);
-            attendance.setCreatedAt(LocalDateTime.now());
+            attendance.setMemberId(request.getMemberIdentifier());
+            attendance.setAttendanceStatus(request.getAttendanceStatus());
 
-            attendanceRepository.save(attendance);
-            createdAttendances.add(attendance);
+            MemberDescription description = new MemberDescription();
+            description.setId(member.getId());
+            description.setFirstName(member.getFirstName());
+            description.setLastName(member.getLastName());
+            description.setEmail(member.getEmail());
+
+
+            description.setOccupation(String.valueOf(member.getOccupation()));
+
+            attendance.setMemberDescription(description);
+
+            ActivityMemberAttendance savedAttendance = attendanceRepository.save(attendance);
+
+            createdAttendances.add(savedAttendance);
         }
 
         return createdAttendances;
     }
 
-    public List<Attendance> getPresentMembers(String collectivityId, String activityId) throws Exception {
-        if (activityId == null || activityId.trim().isEmpty()) {
-            throw new Exception("Activity ID is required");
-        }
-        
-        return attendanceRepository.findPresentByActivityId(activityId);
+    public List<ActivityMemberAttendance> getAttendances(String collectivityId, String activityId) {
+        return attendanceRepository.findByActivityId(activityId);
     }
 }
