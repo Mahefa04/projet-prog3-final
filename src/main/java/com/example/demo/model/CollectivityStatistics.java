@@ -2,52 +2,43 @@ package com.example.demo.model;
 
 public class CollectivityStatistics {
 
-    private String memberId;
-    private String firstName;
-    private String lastName;
+    private MemberDescription memberDescription;
     private Double earnedAmount;
-    private Double potentialUnpaidAmount;
+    private Double unpaidAmount;
+    private Double assiduityPercentage;
 
     public CollectivityStatistics() {
     }
 
-    public String getMemberId() {
-        return memberId;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
+    public MemberDescription getMemberDescription() {
+        return memberDescription;
     }
 
     public Double getEarnedAmount() {
         return earnedAmount;
     }
 
-    public Double getPotentialUnpaidAmount() {
-        return potentialUnpaidAmount;
+    public Double getUnpaidAmount() {
+        return unpaidAmount;
     }
 
-    public void setMemberId(String memberId) {
-        this.memberId = memberId;
+    public Double getAssiduityPercentage() {
+        return assiduityPercentage;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setMemberDescription(MemberDescription memberDescription) {
+        this.memberDescription = memberDescription;
     }
 
     public void setEarnedAmount(Double earnedAmount) {
         this.earnedAmount = earnedAmount;
     }
 
-    public void setPotentialUnpaidAmount(Double potentialUnpaidAmount) {
-        this.potentialUnpaidAmount = potentialUnpaidAmount;
+    public void setUnpaidAmount(Double unpaidAmount) {
+        this.unpaidAmount = unpaidAmount;
+    }
+
+    public void setAssiduityPercentage(Double assiduityPercentage) {
+        this.assiduityPercentage = assiduityPercentage;
     }
 }
