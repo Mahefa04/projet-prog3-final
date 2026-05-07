@@ -133,4 +133,18 @@ public class Member {
     public void setReferees(List<Member> referees) {
         this.referees = referees;
     }
+
+    public String getCollectivityId() {
+        if (this.collectivity != null) {
+            return this.collectivity.getId();
+        }
+        return null;
+    }
+
+    public void setCollectivityId(String collectivityId) {
+        if (this.collectivity == null) {
+            this.collectivity = new Collectivity();
+        }
+        this.collectivity.setId(collectivityId);
+    }
 }
