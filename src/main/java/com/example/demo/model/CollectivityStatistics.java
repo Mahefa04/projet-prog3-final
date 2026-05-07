@@ -41,4 +41,46 @@ public class CollectivityStatistics {
     public void setAssiduityPercentage(Double assiduityPercentage) {
         this.assiduityPercentage = assiduityPercentage;
     }
+
+    // Méthodes ajoutées pour le mapper
+    public String getMemberId() {
+        return this.memberDescription != null ? this.memberDescription.getMemberId() : null;
+    }
+
+    public String getFirstName() {
+        return this.memberDescription != null ? this.memberDescription.getFirstName() : null;
+    }
+
+    public String getLastName() {
+        return this.memberDescription != null ? this.memberDescription.getLastName() : null;
+    }
+
+    public Double getPotentialUnpaidAmount() {
+        return this.unpaidAmount;
+    }
+
+    public void setMemberId(String memberId) {
+        if (this.memberDescription == null) {
+            this.memberDescription = new MemberDescription();
+        }
+        this.memberDescription.setMemberId(memberId);
+    }
+
+    public void setFirstName(String firstName) {
+        if (this.memberDescription == null) {
+            this.memberDescription = new MemberDescription();
+        }
+        this.memberDescription.setFirstName(firstName);
+    }
+
+    public void setLastName(String lastName) {
+        if (this.memberDescription == null) {
+            this.memberDescription = new MemberDescription();
+        }
+        this.memberDescription.setLastName(lastName);
+    }
+
+    public void setPotentialUnpaidAmount(Double potentialUnpaidAmount) {
+        this.unpaidAmount = potentialUnpaidAmount;
+    }
 }

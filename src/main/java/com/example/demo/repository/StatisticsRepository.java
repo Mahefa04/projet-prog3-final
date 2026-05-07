@@ -29,7 +29,7 @@ public class StatisticsRepository {
                     SELECT
                         c.id AS collectivity_id,
                         COALESCE(SUM(mf.amount), 0) AS expected_amount
-                    FROM collectivity c
+                    FROM collectivities c
                     LEFT JOIN membership_fee mf
                         ON mf.collectivity_id = c.id
                        AND mf.status = 'ACTIVE'
@@ -46,7 +46,7 @@ public class StatisticsRepository {
                                 ELSE 0
                             END
                         ), 0) AS paid_amount
-                    FROM member m
+                    FROM members m
                     LEFT JOIN member_payment mp
                         ON mp.member_id = m.id
                     GROUP BY m.id, m.collectivity_id
@@ -73,7 +73,7 @@ public class StatisticsRepository {
                             WHEN COUNT(a.id) = 0 THEN 0
                             ELSE COUNT(CASE WHEN a.status = 'PRESENT' THEN 1 END) * 100.0 / COUNT(a.id)
                         END AS attendance_rate
-                    FROM member m
+                    FROM members m
                     LEFT JOIN attendance a ON m.id = a.member_id
                     LEFT JOIN activity act ON a.activity_id = act.id
                         AND act.activity_date BETWEEN ? AND ?
@@ -101,8 +101,8 @@ public class StatisticsRepository {
                         END
                     ) AS new_members,
                     COALESCE(ga.global_attendance_rate, 0) AS global_attendance_rate
-                FROM collectivity c
-                LEFT JOIN member m
+                FROM collectivities c
+                LEFT JOIN members m
                     ON m.collectivity_id = c.id
                 LEFT JOIN member_status ms
                     ON ms.member_id = m.id

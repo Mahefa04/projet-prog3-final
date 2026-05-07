@@ -50,4 +50,13 @@ public class MemberDescription {
     public void setOccupation(String occupation) {
         this.occupation = occupation;
     }
+
+    // Alias methods for memberId (same as id)
+    public String getMemberId() {
+        return this.id;
+    }
+
+    public void setMemberId(String memberId) {
+        this.id = memberId;
+    }
 }
