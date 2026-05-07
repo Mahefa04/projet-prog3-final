@@ -8,6 +8,7 @@ public class Statistics {
     private Integer upToDateMembers;
     private Double upToDatePercentage;
     private Integer newMembers;
+    private Double globalAttendanceRate;
 
     public Statistics() {
     }
@@ -36,6 +37,10 @@ public class Statistics {
         return newMembers;
     }
 
+    public Double getGlobalAttendanceRate() {
+        return globalAttendanceRate;
+    }
+
     public void setCollectivityId(String collectivityId) {
         this.collectivityId = collectivityId;
     }
@@ -58,5 +63,9 @@ public class Statistics {
 
     public void setNewMembers(Integer newMembers) {
         this.newMembers = newMembers;
+    }
+
+    public void setGlobalAttendanceRate(Double globalAttendanceRate) {
+        this.globalAttendanceRate = globalAttendanceRate;
     }
 }
